@@ -1,0 +1,319 @@
+*{box-sizing:border-box}.arcade-show,.arcade-empty{--c:#5df0ff;--p:#ff42bd;--a:#ffb532;--d:'Orbitron','Rajdhani',sans-serif;position:relative;min-height:100svh;overflow:hidden;isolation:isolate;background:#03050b;color:#eefcff;font-family:'Rajdhani',sans-serif}.arcade-shell{position:relative;z-index:1;display:grid;grid-template-rows:minmax(0,64fr) minmax(0,21fr) minmax(0,15fr);gap:6px;height:100vh;padding:10px 18px}.arcade-main-stage{display:grid;grid-template-columns:minmax(680px,76fr) minmax(260px,24fr);gap:12px;min-height:0}
+.arcade-background{position:absolute;inset:0;z-index:-2;overflow:hidden;background:radial-gradient(ellipse 48% 38% at 50% 12%,#17395f,transparent 67%),radial-gradient(ellipse at 10% 60%,#35123e,transparent 42%),radial-gradient(ellipse at 90% 55%,#07384d,transparent 40%),linear-gradient(#050916,#020308 70%);pointer-events:none}.arcade-background:before{position:absolute;inset:0;content:"";background:repeating-linear-gradient(90deg,transparent 0 9vw,#4be1ff09 9vw 9.1vw),radial-gradient(ellipse at center,transparent 35%,#000b)}.arcade-background:after{position:absolute;inset:0;content:"";background:repeating-linear-gradient(0deg,#fff0 0 3px,#fff03 3px 4px)}.arcade-background__glow{position:absolute;width:45vw;height:45vw;border-radius:50%;filter:blur(100px);opacity:.13}.arcade-background__glow--pink{right:-15vw;top:-10vw;background:#ff28bc}.arcade-background__glow--cyan{left:-15vw;bottom:-20vw;background:#25dfff}.arcade-background__beam{position:absolute;top:-15%;width:20vw;height:85%;filter:blur(10px);opacity:.18;clip-path:polygon(45% 0,55% 0,100% 100%,0 100%)}.arcade-background__beam--left{left:9%;background:#36dbff;transform:rotate(12deg)}.arcade-background__beam--right{right:7%;background:#ff3ab9;transform:rotate(-12deg)}.arcade-background__stars{position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:9vw 11vh;opacity:.17}.arcade-background__sign{position:absolute;top:14%;padding:9px 6px;border:2px solid;background:#07101ccc;font-weight:800;writing-mode:vertical-rl;opacity:.3;box-shadow:0 0 20px currentColor}.arcade-background__sign--left{left:2%;color:#ff4ac5}.arcade-background__sign--right{right:2%;color:#4cefff}.arcade-background__cabinet{position:absolute;bottom:17%;width:12%;height:42%;border:4px solid #172436;background:#0a111b;opacity:.4}.arcade-background__cabinet:before{position:absolute;inset:9% 12% 40%;content:"";background:radial-gradient(circle,#45eaff,transparent 55%),#08101a;border:2px solid #283c50}.arcade-background__cabinet--left{left:-4%}.arcade-background__cabinet--right{right:-4%}.arcade-background__floor{position:absolute;right:-20%;bottom:-20%;left:-20%;height:45%;transform:perspective(500px) rotateX(62deg);transform-origin:bottom;background:repeating-linear-gradient(90deg,transparent 0 8vw,#3ddbff1a 8vw 8.1vw),repeating-linear-gradient(0deg,transparent 0 7vh,#ff37ba15 7vh 7.1vh)}
+.arcade-progress{display:grid;grid-template-rows:auto 1fr auto;gap:1vh;min-height:0;padding:.5vh 0}.arcade-brand{padding-left:5px;line-height:.85;filter:drop-shadow(0 0 12px #17dfff66)}.arcade-brand span,.arcade-brand b{display:block;font:italic 800 clamp(18px,1.5vw,29px) var(--d);letter-spacing:-.08em}.arcade-brand span{color:var(--c)}.arcade-brand b{margin-left:2em;text-shadow:3px 2px 0 #e4249d}.arcade-brand small{display:block;margin-top:8px;color:#91a9b9;font-size:8px;letter-spacing:.3em}.arcade-progress__panel,.arcade-result{position:relative;min-height:0;border:1px solid #31566a;background:linear-gradient(145deg,#0f1d2bf5,#050910f2);clip-path:polygon(0 0,94% 0,100% 5%,100% 100%,6% 100%,0 95%);box-shadow:inset 0 0 35px #3bdfff0b}.arcade-progress__panel:before,.arcade-result:before{position:absolute;inset:5px;content:"";border:1px solid #5fedff1f;clip-path:inherit;pointer-events:none}.arcade-progress__panel>header,.arcade-result>header{display:flex;height:clamp(30px,4vh,42px);padding:0 12px;align-items:center;gap:8px;border-bottom:1px solid #345569;background:linear-gradient(90deg,#0d2737,#0a101a);font-size:clamp(8px,.62vw,12px);font-weight:800;letter-spacing:.1em}.arcade-progress__panel>header i,.arcade-result>header i{width:7px;height:7px;background:var(--c);box-shadow:0 0 10px var(--c)}.arcade-progress__steps{display:grid;height:calc(100% - 42px);padding:1.2vh .7vw;align-content:center;gap:clamp(4px,.7vh,8px)}.arcade-progress__step{position:relative;display:flex;min-height:clamp(40px,5.8vh,60px);padding:7px 9px;align-items:center;gap:9px;border:1px solid #243c4c;background:#09121b;clip-path:polygon(0 0,94% 0,100% 25%,100% 100%,0 100%);opacity:.45}.arcade-progress__step>span{display:grid;width:30px;height:30px;place-items:center;border:1px solid #4d7186;color:#7090a1;font:700 10px var(--d)}.arcade-progress__step div{display:grid}.arcade-progress__step small{color:#557080;font-size:7px;letter-spacing:.15em}.arcade-progress__step b{font-size:clamp(9px,.7vw,13px);letter-spacing:.07em}.arcade-progress__step>i{position:absolute;right:7px;width:4px;height:60%;background:#243c4c}.arcade-progress__step.is-active{border-color:#d9901f;background:linear-gradient(90deg,#37210b,#111019);opacity:1;box-shadow:0 0 15px #ffaf2329}.arcade-progress__step.is-active>span{border-color:var(--a);color:#251300;background:var(--a);box-shadow:0 0 12px var(--a)}.arcade-progress__step.is-active>i{background:var(--a)}.arcade-progress__step.is-done{opacity:.9}.arcade-progress__step.is-done>span{border-color:var(--c);color:var(--c)}.arcade-lucky{display:grid;grid-template-columns:45px 1fr;align-items:center;padding:4px 8px;border-top:1px solid #24516b}.arcade-lucky>strong{color:var(--a);font:800 clamp(10px,.75vw,14px) var(--d)}.arcade-lucky>small{grid-column:2;color:#657f90;font-size:7px}.arcade-lucky__bot{grid-row:1/3;position:relative;width:33px;height:29px;border:2px solid var(--c)}.arcade-lucky__bot i{position:absolute;top:8px;width:5px;height:5px;background:var(--a)}.arcade-lucky__bot i:first-child{left:7px}.arcade-lucky__bot i:nth-child(2){right:7px}.arcade-lucky__bot b{position:absolute;right:8px;bottom:5px;left:8px;height:2px;background:var(--c)}
+.arcade-machine{position:relative;display:grid;grid-template-rows:auto 1fr;min-height:0;filter:drop-shadow(0 15px 22px #000a);transform-origin:center}.arcade-marquee{position:relative;z-index:2;display:flex;height:clamp(70px,9.7vh,104px);padding:.8vh 2vw;align-items:center;justify-content:space-between;border:2px solid #d27625;background:linear-gradient(#361b12,#110b11 65%,#27120c);clip-path:polygon(4% 0,96% 0,100% 22%,98% 100%,2% 100%,0 22%);box-shadow:inset 0 0 0 4px #09070a,inset 0 0 25px #ff6e203d}.arcade-marquee:before{position:absolute;inset:8px;content:"";border:1px dashed #ffb84d66;clip-path:inherit}.arcade-marquee div{display:grid}.arcade-marquee span{color:#d48946;font-size:7px;letter-spacing:.3em}.arcade-marquee strong{color:#ffc657;font:italic 900 clamp(23px,2.5vw,48px) var(--d);letter-spacing:.08em;line-height:1;text-shadow:0 0 10px #ff7c27,3px 3px 0 #681827}.arcade-marquee small{color:#a97958;font-size:8px;letter-spacing:.2em}.arcade-marquee>b{color:var(--c);font:800 clamp(18px,2vw,37px) var(--d);text-shadow:0 0 12px var(--c)}.arcade-machine__body{display:grid;grid-template-rows:minmax(0,1fr) clamp(29px,4vh,42px) clamp(90px,12.5vh,135px);min-height:0;margin:-5px 2.2% 0;padding:10px 13px 0;border:3px solid #223a4b;border-top:0;background:linear-gradient(90deg,#0d1720,#182b36 4%,#090e15 10% 90%,#182b36 96%,#0d1720);clip-path:polygon(0 0,100% 0,98% 100%,2% 100%);box-shadow:inset 9px 0 16px #72eeff10,inset -9px 0 16px #ff3bac12}.arcade-machine__screen{position:relative;min-height:0;overflow:hidden;border:2px solid #345366;background:radial-gradient(ellipse at center,#153248,#07131f 48%,#03080d);box-shadow:inset 0 0 45px #000,inset 0 0 0 5px #060a10}.arcade-machine__screen:after{position:absolute;inset:0;z-index:8;content:"";background:repeating-linear-gradient(0deg,transparent 0 3px,#83edff08 3px 4px),linear-gradient(90deg,#0008,transparent 16% 84%,#0008);pointer-events:none}.arcade-machine__telemetry{position:absolute;z-index:4;top:1.3vh;display:grid;color:#8db3c5;font-size:clamp(7px,.5vw,10px);letter-spacing:.1em}.arcade-machine__telemetry b{color:#f1b257;font:700 clamp(8px,.65vw,12px) var(--d)}.arcade-machine__telemetry--left{left:1vw}.arcade-machine__telemetry--right{right:1vw;text-align:right}.arcade-machine__telemetry--right b{color:var(--c)}.arcade-conveyor{position:absolute;right:0;bottom:7%;left:0;height:70%;overflow:hidden}.arcade-conveyor__rail{position:absolute;right:0;bottom:14%;left:0;height:23%;border-block:3px solid #2e5368;background:repeating-linear-gradient(90deg,#111d27 0 24px,#243947 24px 28px)}.arcade-conveyor__cards{position:absolute;bottom:19%;left:0;display:flex;align-items:end;gap:clamp(7px,.6vw,12px);will-change:transform}.arcade-conveyor__card{position:relative;flex:0 0 clamp(68px,5.7vw,108px);transform:perspective(300px) rotateY(8deg) scale(.83);filter:saturate(.6);opacity:.68}.arcade-conveyor__card:nth-child(even){transform:rotateY(-8deg) scale(.88);opacity:.85}.arcade-conveyor__card:before{position:absolute;z-index:3;top:-14px;left:50%;content:attr(data-card-number);color:#80c7db;font:700 8px var(--d);transform:translateX(-50%)}.arcade-conveyor__card[data-selected-card]{z-index:4;transform:scale(1.12);filter:none;opacity:1}.arcade-conveyor__selector{position:absolute;z-index:5;top:9%;bottom:8%;left:50%;width:clamp(90px,7.5vw,143px);border:2px solid var(--a);transform:translateX(-50%);clip-path:polygon(12% 0,88% 0,100% 9%,100% 91%,88% 100%,12% 100%,0 91%,0 9%);box-shadow:0 0 25px #ffac345c;pointer-events:none}.arcade-scanner{position:absolute;z-index:7;top:-3px;left:50%;width:78px;height:66px;transform:translateX(-50%);pointer-events:none}.arcade-scanner i{position:absolute;left:19px;width:40px;height:31px;border:3px solid #657482;background:linear-gradient(135deg,#42505a,#101820 60%,#76838a);clip-path:polygon(14% 0,86% 0,100% 25%,88% 100%,12% 100%,0 25%)}.arcade-scanner b{position:absolute;top:27px;left:31px;width:16px;height:24px;border:3px solid #78919c;background:#121d25}.arcade-scanner span{position:absolute;top:49px;left:27px;width:24px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 12px 5px #45eaff88}.arcade-status{position:relative;display:flex;margin:0 5%;align-items:center;justify-content:center;gap:8px;border:2px solid #44361e;background:#11140c;color:#ffc146;font:700 clamp(8px,.65vw,12px) var(--d);letter-spacing:.14em}.arcade-status i{width:5px;height:5px;border-radius:50%;background:#ffc146;box-shadow:0 0 8px #ffc146}.arcade-status span{position:absolute;right:8px;color:#586546;font:600 7px 'Rajdhani'}.arcade-control-deck{position:relative;display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;padding:1vh 2.3vw 1.4vh;background:linear-gradient(160deg,#263744,#0a1119 48%,#182530);clip-path:polygon(4% 0,96% 0,100% 100%,0 100%)}.arcade-control-deck:before{position:absolute;inset:5px;content:"";border:1px solid #59758755;clip-path:inherit;pointer-events:none}.arcade-lights{display:flex;align-items:center;gap:6px}.arcade-lights i{width:10px;height:10px;border:2px solid #82939e;border-radius:50%;background:#32f2f5;box-shadow:0 0 9px #32f2f5}.arcade-lights i:nth-child(2){background:#ffbd31}.arcade-lights i:nth-child(3){background:#ff3b8f}.arcade-lights span{color:#6d8998;font-size:6px}.arcade-console-mark{text-align:center}.arcade-console-mark b,.arcade-console-mark span{font:italic 800 clamp(10px,1vw,18px) var(--d)}.arcade-console-mark b{color:var(--c)}.arcade-console-mark span{color:var(--p)}.arcade-console-mark small{display:block;color:#577181;font-size:6px;letter-spacing:.25em}.arcade-push-housing{position:relative;z-index:12;display:grid;justify-items:center;justify-self:end;pointer-events:auto}.arcade-push-housing>small{color:#c6a267;font-size:6px}.arcade-push{position:relative;z-index:13;width:clamp(65px,5.2vw,96px);height:clamp(47px,6.5vh,69px);border:5px solid #5d1e18;border-radius:50%;background:radial-gradient(circle at 42% 28%,#ffde8a,#ff6433 34%,#a61719 72%);box-shadow:inset 0 -9px 0 #6d1012,inset 0 4px 7px #fff7,0 7px 0 #250c0b,0 0 24px #ff542d99;color:#2b0806;cursor:pointer;font:900 clamp(10px,.8vw,15px) var(--d);pointer-events:auto}.arcade-push:hover:not(:disabled){filter:brightness(1.18)}.arcade-push:active:not(:disabled){transform:translateY(5px) scale(.96)}.arcade-push:disabled{filter:grayscale(.75);cursor:not-allowed;opacity:.48}
+.arcade-result{display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:0 10px 1vh}.arcade-result>header{margin:0 -10px}.arcade-result>header span{flex:1}.arcade-result>header b{padding:2px 5px;border:1px solid #ff3e91;color:#ff5ba2;font-size:7px}.arcade-result__card{position:relative;display:grid;min-height:0;margin:1.2vh .4vw;place-items:center;border:1px solid #3c5a69;background:radial-gradient(circle at 50% 42%,#183043,#060c13 70%);clip-path:polygon(8% 0,92% 0,100% 7%,100% 93%,92% 100%,8% 100%,0 93%,0 7%)}.arcade-result__card:before{position:absolute;inset:8px;content:"";border:1px dashed #65efff2b;clip-path:inherit}.arcade-result__waiting{z-index:1;display:grid;justify-items:center}.arcade-result__waiting>b{display:grid;width:clamp(68px,6.8vw,122px);aspect-ratio:3/4;place-items:center;border:2px solid #2e5e73;background:repeating-linear-gradient(45deg,#07121e 0 10px,#101c2a 10px 20px);color:#3d7a91;font:900 clamp(35px,3.8vw,70px) var(--d)}.arcade-result__waiting>strong{margin-top:1vh;color:#6c8d9e;font:800 clamp(9px,.7vw,13px) var(--d)}.arcade-result__waiting>span{color:#3d5968;font-size:7px}.arcade-result__card>.arcade-card{width:min(90%,260px);height:91%;min-height:0;padding:1.2vh .8vw}.arcade-result__group{display:grid;min-height:clamp(68px,9.5vh,103px);padding:.7vh 10px;place-items:center;border:1px solid #284c60;background:#091722;clip-path:polygon(5% 0,95% 0,100% 20%,100% 100%,0 100%,0 20%)}.arcade-result__group small{color:#7294a5;font-size:9px;font-weight:700}.arcade-result__group strong{color:#345b6c;font:900 clamp(19px,2vw,38px) var(--d);line-height:.8}.arcade-result__group span{color:#496472;font-size:6px}.arcade-result__group.is-scanning{border-color:var(--a)}.arcade-result__group.is-locked{border-color:var(--c);box-shadow:0 0 22px #4be9ff38}.arcade-result__group.is-locked strong{color:var(--c);text-shadow:0 0 15px #36e9ff}
+.arcade-card{position:relative;min-height:140px;overflow:hidden;border:2px solid #eaaa2e;background:linear-gradient(150deg,#f4bd39 0 6%,#090b10 6% 73%,#971d68 73% 82%,#f1b72f 82%);clip-path:polygon(9% 0,100% 0,100% 91%,91% 100%,0 100%,0 9%);color:#fff;box-shadow:0 0 22px #ffb5343f}.arcade-card:after{position:absolute;inset:0;content:"";background:repeating-linear-gradient(135deg,transparent 0 9px,#fff05 9px 10px);pointer-events:none}.arcade-card header{position:relative;z-index:1;display:flex;justify-content:space-between;font-size:9px;font-weight:800}.arcade-card header i{color:#ffdf58;font-style:normal}.arcade-card__portraits{position:relative;z-index:1;display:flex;height:55%;margin:1vh 0;justify-content:center;gap:5px}.arcade-portrait{width:46%;overflow:hidden;border:2px solid #e4ad2d;background:#172635}.arcade-portrait img{width:100%;height:100%;object-fit:cover}.arcade-portrait span{display:grid;width:100%;height:100%;place-items:center;color:#ffe265;font:800 clamp(13px,1.3vw,24px) var(--d)}.arcade-card>strong{position:relative;z-index:1;display:block;font-size:clamp(9px,.75vw,14px);text-align:center;text-transform:uppercase}.arcade-card>small{position:relative;z-index:1;display:block;color:#b6c2c8;font-size:6px;text-align:center}.arcade-card--back{display:grid;min-height:105px;padding:5px;place-content:center;justify-items:center;border-color:#c33b97;background:repeating-linear-gradient(45deg,#1b0a25 0 8px,#091421 8px 16px)}.arcade-card--back b{color:#ffd1ef;font:900 clamp(17px,2vw,35px) var(--d)}.arcade-card--back span{color:#79ddff;font-size:6px;text-align:center}.arcade-card--compact{display:block;min-height:0;height:100%;padding:3px 5px;border:0;border-left:3px solid var(--group-accent);background:#09151f;clip-path:none;box-shadow:none}.arcade-card--compact header{font-size:6px}.arcade-card--compact>strong{margin-top:1px;overflow:hidden;font-size:clamp(6px,.44vw,8px);text-align:left;text-overflow:ellipsis;white-space:nowrap}.arcade-card--compact>small{display:none}
+.arcade-groups{position:relative;z-index:2;display:grid;min-height:0;padding:7px 10px;gap:clamp(4px,.42vw,8px);grid-template-columns:repeat(var(--arcade-group-count),minmax(0,1fr));border:2px solid #263f50;background:linear-gradient(#14232d,#050a11 18%);clip-path:polygon(1% 0,99% 0,100% 12%,100% 100%,0 100%,0 12%)}.arcade-group{--group-accent:#53eaff;display:grid;min-width:0;min-height:0;padding:4px;border:1px solid color-mix(in srgb,var(--group-accent) 45%,#233744);background:#071019;clip-path:polygon(6% 0,94% 0,100% 11%,100% 100%,0 100%,0 11%);transition:.18s}.arcade-group:nth-child(8n+1){--group-accent:#ff4f5e}.arcade-group:nth-child(8n+2){--group-accent:#42a5ff}.arcade-group:nth-child(8n+3){--group-accent:#45d88e}.arcade-group:nth-child(8n+4){--group-accent:#ffb72f}.arcade-group:nth-child(8n+5){--group-accent:#a56bff}.arcade-group:nth-child(8n+6){--group-accent:#4beafa}.arcade-group:nth-child(8n+7){--group-accent:#ff4cb7}.arcade-group:nth-child(8n){--group-accent:#ffe045}.arcade-group--active{transform:translateY(-3px) scale(1.025);border-color:var(--group-accent);box-shadow:0 0 20px color-mix(in srgb,var(--group-accent) 45%,transparent)}.arcade-group header{display:flex;min-height:22px;padding:0 4px;align-items:center;justify-content:space-between;border-bottom:2px solid var(--group-accent)}.arcade-group header strong{font:800 clamp(7px,.58vw,11px) var(--d)}.arcade-group header span{color:var(--group-accent);font-size:8px}.arcade-group__slots{display:grid;min-height:0;height:calc(100% - 22px);padding-top:3px;gap:2px;grid-template-columns:1fr!important}.arcade-group__slot{position:relative;display:grid;min-height:0;padding-left:17px;place-items:stretch;border:1px solid #273945;background:#08111a}.arcade-group__slot:before{position:absolute;left:5px;top:50%;content:attr(data-slot);color:var(--group-accent);font:700 7px var(--d);transform:translateY(-50%)}.arcade-group__slot:not(.arcade-group__slot--filled):after{align-self:center;color:#3a515e;content:"—"}.arcade-group__slot--hidden .arcade-card{visibility:hidden}
+.arcade-history{position:relative;z-index:2;display:grid;min-height:0;padding:7px 12px;grid-template-columns:clamp(145px,11.5vw,220px) 1fr;border:2px solid #273f50;background:linear-gradient(90deg,#101d28,#050a10 20%);clip-path:polygon(1% 0,99% 0,100% 18%,100% 100%,0 100%,0 18%)}.arcade-history>header{display:grid;align-content:center;padding-left:.5vw;border-right:1px solid #31566b}.arcade-history>header span{font:800 clamp(9px,.65vw,12px) var(--d)}.arcade-history>header b{color:var(--a);font:800 clamp(18px,1.6vw,30px) var(--d)}.arcade-history>header i{width:70%;height:2px;background:linear-gradient(90deg,var(--a),transparent)}.arcade-history__rail{display:flex;min-width:0;padding:0 .7vw;align-items:stretch;gap:7px;overflow-x:auto}.arcade-history__empty{display:grid;width:100%;place-items:center;color:#3f5968;font:700 9px var(--d);letter-spacing:.2em}.arcade-history__team{display:grid;flex:0 0 clamp(76px,6vw,116px);min-width:0;padding:4px;grid-template-columns:33% 1fr;grid-template-rows:1fr auto;border:1px solid #31566b;background:#0c1924}.arcade-history__team>div{grid-row:1/3;overflow:hidden;border:1px solid #4c9cb5}.arcade-history__team img{width:100%;height:100%;object-fit:cover}.arcade-history__team div span{display:grid;width:100%;height:100%;place-items:center;color:var(--c);font:800 9px var(--d)}.arcade-history__team b{padding-left:5px;color:var(--a);font:800 clamp(8px,.65vw,12px) var(--d)}.arcade-history__team small{padding-left:5px;overflow:hidden;color:#8faebb;font-size:7px;text-overflow:ellipsis;white-space:nowrap}
+.arcade-operator{position:fixed;right:16px;bottom:16px;z-index:30;display:flex;gap:5px;opacity:0;transform:translateY(6px);transition:.2s}.arcade-operator--visible{opacity:1;transform:none}.arcade-operator button,.arcade-operator a{display:flex;padding:7px 9px;align-items:center;gap:5px;border:1px solid #3a6479;background:#09131de6;color:#cdebf6;font-size:9px;text-decoration:none;cursor:pointer}.arcade-operator button:disabled{opacity:.35}.arcade-modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:#01040bd9}.arcade-modal>div{width:min(90vw,390px);padding:24px;border:1px solid var(--a);background:#0b1420}.arcade-modal p{margin:0;color:var(--a);font:800 21px var(--d)}.arcade-modal span{display:block;margin-top:10px;color:#91a9b6}.arcade-modal footer{display:flex;margin-top:20px;justify-content:flex-end;gap:7px}.arcade-modal button,.arcade-empty a{padding:9px 13px;border:1px solid #406276;background:#10202d;color:#fff}.arcade-debug{position:fixed;z-index:60;bottom:5px;left:5px;background:#000d;color:#8ff}.arcade-empty{display:grid;place-items:center;text-align:center}.arcade-empty>div{z-index:1}.arcade-empty h1{font:900 70px var(--d)}
+@media(max-width:1400px),(max-height:820px){.arcade-shell{padding:6px 9px;gap:4px}.arcade-main-stage{grid-template-columns:minmax(650px,76fr) minmax(230px,24fr);gap:7px}.arcade-machine__body{grid-template-rows:minmax(0,1fr) 29px 88px}.arcade-result__group{min-height:66px}.arcade-card__portraits{margin:5px 0}}
+@media(max-width:1050px){.arcade-main-stage{grid-template-columns:760px 280px}.arcade-shell{width:1050px;transform:scale(calc(100vw / 1050));transform-origin:top left;height:calc(100vh / (100vw / 1050))}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+.arcade-bottom{position:relative;z-index:2;display:grid;min-height:0;grid-template-columns:minmax(0,1fr)}.arcade-bottom>.arcade-history{z-index:auto}
+
+/* The home-page poster uses the same legacy class names. Keep the show machine isolated. */
+.arcade-show .arcade-machine{width:auto;height:auto;border:0;border-radius:0;background:none;box-shadow:none;transform:none;transition:none}
+.arcade-show .arcade-machine:after{display:none}
+.arcade-show .arcade-machine__screen{position:relative;display:block;width:auto;height:auto;min-height:0;margin:0;overflow:hidden;flex:none;align-items:initial;justify-content:initial;border:2px solid #345366;border-radius:0;background:radial-gradient(ellipse at center,#153248,#07131f 48%,#03080d);box-shadow:inset 0 0 45px #000,inset 0 0 0 5px #060a10;text-transform:none}
+.arcade-show .arcade-machine__screen:before{display:none}
+.arcade-show .arcade-machine__screen b{z-index:auto;margin:0;color:inherit;font-size:inherit;letter-spacing:inherit}
+.arcade-show .arcade-machine__telemetry b{color:#f1b257;font:700 clamp(8px,.65vw,12px) var(--d)}
+.arcade-show .arcade-machine__telemetry--right b{color:var(--c)}
+.arcade-show .arcade-scanner b{position:absolute;top:27px;left:31px;z-index:auto;width:16px;height:24px;border:3px solid #78919c;background:#121d25}
+.arcade-groups--compact{grid-template-columns:repeat(var(--arcade-group-count),minmax(180px,260px));justify-content:start}
+.arcade-groups--compact .arcade-group header{min-height:18px;padding-inline:3px}
+.arcade-groups--compact .arcade-group header strong{font-size:clamp(8px,.48vw,10px);font-weight:700;letter-spacing:.02em}
+.arcade-groups--compact .arcade-group{grid-template-rows:18px minmax(0,1fr)}
+.arcade-groups--compact .arcade-group__slots{height:auto;min-height:0}
+
+/* Enlarge the conveyor cards for a clearer two-player preview. */
+.arcade-conveyor__cards{gap:clamp(10px,.8vw,18px)}
+.arcade-conveyor__card{flex-basis:clamp(125px,9vw,190px)}
+.arcade-conveyor .arcade-card{min-height:clamp(320px,48vh,520px);padding:10px}
+
+/* Final highlight state: the gold border appears only during result reveal. */
+.arcade-conveyor__card[data-selected-card] .arcade-card{border-color:#d83b9c;box-shadow:0 0 14px #ff42bd30,inset 0 0 18px #48ddff0d}
+.arcade-show--revealing .arcade-conveyor__card[data-selected-card] .arcade-card,
+.arcade-show--groupScanning .arcade-conveyor__card[data-selected-card] .arcade-card,
+.arcade-show--dealing .arcade-conveyor__card[data-selected-card] .arcade-card{border-color:#ffb43c;box-shadow:0 0 24px #ffad3c70,inset 0 0 20px #ffae3516}
+
+/* Final conveyor framing: upright, slightly shorter, and fully visible cards. */
+.arcade-conveyor__cards{bottom:6%}
+.arcade-conveyor__card,.arcade-conveyor__card:nth-child(even){transform:none}
+.arcade-conveyor__card[data-selected-card]{transform:scale(1.04)}
+.arcade-conveyor .arcade-card{min-height:clamp(250px,38vh,420px)}
+
+/* Make each conveyor card about 2.5x wider while preserving its height. */
+.arcade-conveyor__card{flex-basis:clamp(300px,22.5vw,475px)}
+
+/* Keep conveyor cards upright, slightly shorter, and fully visible in the screen. */
+.arcade-conveyor__cards{bottom:6%}
+.arcade-conveyor__card,.arcade-conveyor__card:nth-child(even){transform:none}
+.arcade-conveyor__card[data-selected-card]{transform:scale(1.04)}
+.arcade-conveyor .arcade-card{min-height:clamp(250px,38vh,420px)}
+
+/* Only use the gold outline once the draw has actually revealed its result. */
+.arcade-conveyor__card[data-selected-card] .arcade-card{border-color:#d83b9c;box-shadow:0 0 14px #ff42bd30,inset 0 0 18px #48ddff0d}
+.arcade-show--revealing .arcade-conveyor__card[data-selected-card] .arcade-card,
+.arcade-show--groupScanning .arcade-conveyor__card[data-selected-card] .arcade-card,
+.arcade-show--dealing .arcade-conveyor__card[data-selected-card] .arcade-card{border-color:#ffb43c;box-shadow:0 0 24px #ffad3c70,inset 0 0 20px #ffae3516}
+.arcade-progress__steps{align-content:start;padding-top:clamp(18px,5vh,52px)}
+
+/* Readability pass: rounded arcade panels and a calmer type hierarchy. */
+.arcade-show{font-family:'Rajdhani',Arial,sans-serif;letter-spacing:.01em}
+.arcade-show button,.arcade-show small,.arcade-show span,.arcade-show p{font-family:'Rajdhani',Arial,sans-serif}
+.arcade-show h1,.arcade-show h2,.arcade-show h3,.arcade-show strong,.arcade-show b,.arcade-show header{font-family:'Orbitron','Rajdhani',Arial,sans-serif}
+.arcade-progress__panel,.arcade-result,.arcade-machine__body,.arcade-marquee,.arcade-groups,.arcade-group,.arcade-history,.arcade-motto,.arcade-result__card,.arcade-result__group{clip-path:none;border-radius:16px}
+.arcade-progress__panel,.arcade-result{overflow:hidden}
+.arcade-marquee{border-radius:18px 18px 10px 10px}
+.arcade-machine__body{border-radius:0 0 22px 22px}
+.arcade-groups{border-radius:16px}
+.arcade-group{border-radius:12px}
+.arcade-history{border-radius:16px}
+.arcade-motto{border-radius:14px}
+.arcade-result__card{border-radius:14px}
+.arcade-result__group{border-radius:12px}
+.arcade-progress__step{clip-path:none;border-radius:10px}
+.arcade-card,.arcade-card--back{clip-path:none;border-radius:12px}
+.arcade-card--compact{border-radius:7px}
+.arcade-group__slot{border-radius:7px}
+.arcade-push{border-radius:50%}
+.arcade-progress__panel>header,.arcade-result>header{font-size:clamp(10px,.7vw,14px);letter-spacing:.055em}
+.arcade-progress__step b{font-family:'Rajdhani',Arial,sans-serif;font-size:clamp(12px,.82vw,16px);font-weight:700;letter-spacing:.04em}
+.arcade-progress__step small,.arcade-machine__telemetry small,.arcade-machine__telemetry span,.arcade-result__waiting>span,.arcade-result__group small,.arcade-result__group span{font-family:'Rajdhani',Arial,sans-serif;font-size:clamp(8px,.5vw,11px);letter-spacing:.08em}
+.arcade-group header strong{font-family:'Rajdhani',Arial,sans-serif;font-size:clamp(10px,.65vw,14px);font-weight:800;letter-spacing:.04em}
+.arcade-group header span{font-family:'Rajdhani',Arial,sans-serif;font-size:clamp(9px,.5vw,11px)}
+.arcade-history>header span{font-family:'Rajdhani',Arial,sans-serif;font-size:clamp(11px,.72vw,15px);font-weight:800;letter-spacing:.04em}
+.arcade-history__empty{font-family:'Rajdhani',Arial,sans-serif;font-size:clamp(9px,.55vw,12px);letter-spacing:.12em}
+.arcade-result__waiting>strong{font-family:'Rajdhani',Arial,sans-serif;font-size:clamp(11px,.8vw,16px);font-weight:800;letter-spacing:.04em}
+
+/* Final type choice: clean system sans-serif for maximum legibility. */
+.arcade-show,.arcade-show button,.arcade-show small,.arcade-show span,.arcade-show p{font-family:'Segoe UI',Arial,sans-serif}
+.arcade-show h1,.arcade-show h2,.arcade-show h3,.arcade-show strong,.arcade-show b,.arcade-show header{font-family:'Segoe UI',Arial,sans-serif}
+.arcade-brand span,.arcade-brand b,.arcade-marquee strong,.arcade-console-mark b,.arcade-console-mark span,.arcade-result__waiting>b,.arcade-result__group strong,.arcade-history>header b{font-family:'Arial Black','Segoe UI',Arial,sans-serif}
+.arcade-marquee strong{font-weight:900;letter-spacing:.035em}
+.arcade-progress__panel>header,.arcade-result>header{font-weight:700;letter-spacing:.035em}
+.arcade-progress__step b,.arcade-group header strong,.arcade-history>header span,.arcade-result__waiting>strong{font-family:'Segoe UI',Arial,sans-serif;font-weight:700;letter-spacing:.015em}
+.arcade-machine__telemetry b,.arcade-status strong,.arcade-push,.arcade-motto{font-family:'Segoe UI',Arial,sans-serif;font-weight:800;letter-spacing:.03em}
+.arcade-status strong{font-size:clamp(10px,.72vw,14px)}
+
+/* Selected team card: wide, calm navy treatment instead of the loud yellow/red collectible look. */
+.arcade-result__card>.arcade-card{width:calc(100% - 12px);max-width:none;height:auto;aspect-ratio:1.48 / 1;min-height:0;padding:clamp(12px,1.2vw,20px);border:2px solid #56e8ff;border-radius:16px;background:linear-gradient(145deg,#162b3d 0%,#0a1420 48%,#111d37 100%);box-shadow:0 0 24px #48e7ff2e,inset 0 0 28px #4bb7ff12;clip-path:none}
+.arcade-result__card>.arcade-card:before{position:absolute;inset:8px;content:"";border:1px solid #61efff55;border-radius:10px;pointer-events:none}
+.arcade-result__card>.arcade-card:after{background:linear-gradient(120deg,transparent 40%,#8e74ff12 50%,transparent 60%);}
+.arcade-result__card>.arcade-card header{color:#d6f8ff;font-size:clamp(9px,.65vw,13px)}
+.arcade-result__card>.arcade-card header i{color:#61efff}
+.arcade-result__card>.arcade-card .arcade-portrait{border-color:#61efff;background:#101d2b;box-shadow:0 0 12px #4beaff1c}
+.arcade-result__card>.arcade-card .arcade-portrait span{color:#9befff}
+.arcade-result__card>.arcade-card>strong{color:#f2fbff;font-size:clamp(12px,.9vw,17px)}
+.arcade-result__card>.arcade-card>small{color:#86b6c7}
+
+/* Collectible sports-card treatment based on the supplied reference. */
+.arcade-result__card>.arcade-card{width:min(94%,360px);height:calc(100% - 12px);aspect-ratio:.72 / 1;padding:clamp(13px,1vw,18px);border:2px solid #ff4ec4;border-radius:18px;background:linear-gradient(145deg,#ffc52f 0 8%,#111827 8% 73%,#c81777 73% 84%,#f4bd2d 84%);box-shadow:0 0 30px #ff4ec455,inset 0 0 24px #ff39b51a;clip-path:none}
+.arcade-result__card>.arcade-card:before{inset:8px;border:1px solid #ffda5e88;border-radius:11px}
+.arcade-result__card>.arcade-card:after{background:linear-gradient(135deg,transparent 0 23%,#fff2 23% 25%,transparent 25% 61%,#0003 61% 63%,transparent 63%),repeating-linear-gradient(135deg,transparent 0 12px,#fff08 12px 13px)}
+.arcade-result__card>.arcade-card header{color:#fff;font-size:clamp(10px,.72vw,14px);font-weight:800;letter-spacing:.04em}
+.arcade-result__card>.arcade-card header i{color:#ffe56c}
+.arcade-result__card>.arcade-card .arcade-card__portraits{height:58%;margin:clamp(10px,1.2vh,18px) 0 10px;gap:6px}
+.arcade-result__card>.arcade-card .arcade-portrait{width:47%;border:2px solid #ffcf3e;background:#172638;box-shadow:0 0 12px #ffc02e33}
+.arcade-result__card>.arcade-card .arcade-portrait span{color:#ffe56c;font-size:clamp(18px,1.8vw,31px)}
+.arcade-result__card>.arcade-card>strong{color:#fff;font-size:clamp(12px,.9vw,17px);font-weight:900;text-shadow:1px 2px 0 #162033}
+.arcade-result__card>.arcade-card>small{color:#ffad56;font-size:clamp(7px,.46vw,10px);font-weight:800;letter-spacing:.12em}
+.arcade-result__group{border-color:#2b94ff;background:linear-gradient(160deg,#07192c,#06101c);box-shadow:inset 0 0 24px #168fff22}
+.arcade-result__group strong{color:#44b8ff}
+.arcade-result__group.is-locked{border-color:#38c7ff;box-shadow:0 0 22px #4be9ff55,inset 0 0 22px #4be9ff22}
+
+/* Reference-driven polish: denser arcade hall, larger machine cards, richer result cabinet. */
+.arcade-background{background:radial-gradient(ellipse 48% 38% at 50% 8%,#244b7a 0%,transparent 65%),radial-gradient(ellipse 35% 60% at 4% 48%,#6d155f88 0%,transparent 65%),radial-gradient(ellipse 35% 60% at 96% 50%,#063f6788 0%,transparent 65%),linear-gradient(180deg,#080712 0%,#070b16 52%,#02050b 100%)}
+.arcade-background:before{background:linear-gradient(90deg,#ff33b31a,transparent 17%,transparent 83%,#25dfff1a),repeating-linear-gradient(90deg,transparent 0 8.8vw,#51e8ff0c 8.8vw 8.95vw),radial-gradient(ellipse at center,transparent 35%,#0009)}
+.arcade-background__sign{opacity:.62;border-radius:8px;background:#080817e8;text-shadow:0 0 10px currentColor}
+.arcade-background__cabinet{opacity:.68;border-color:#5c244c;box-shadow:0 0 28px #ff42bd33}
+.arcade-progress__panel{border-color:#3bbde777;background:linear-gradient(150deg,#10273aed,#060c15f5);box-shadow:0 0 22px #1edcff1a,inset 0 0 35px #3bdfff10}
+.arcade-progress__step{min-height:clamp(45px,6.2vh,66px);border-color:#2f5268;background:linear-gradient(90deg,#0b1b29,#08101a)}
+.arcade-progress__step.is-active{border-color:#ffc13d;background:linear-gradient(90deg,#4b2b0d,#17131a);box-shadow:0 0 22px #ffb72f44,inset 0 0 18px #ffb72f18}
+.arcade-machine{filter:drop-shadow(0 20px 28px #000c) drop-shadow(0 0 18px #37dfff1f)}
+.arcade-marquee{border-color:#ff8a32;background:linear-gradient(180deg,#3b1b14,#160811 70%,#29100d);box-shadow:inset 0 0 0 4px #09070a,inset 0 0 30px #ff6e204a,0 0 22px #ff6c2938}
+.arcade-marquee strong{text-shadow:0 0 8px #ff993a,0 0 18px #ff6b24,3px 3px 0 #7c1730}
+.arcade-machine__body{background:linear-gradient(90deg,#0b151f,#1b3342 4%,#070d14 10% 90%,#1b3342 96%,#0b151f);box-shadow:inset 10px 0 20px #70eeff16,inset -10px 0 20px #ff3bac18,0 12px 30px #000b}
+.arcade-show .arcade-machine__screen{background:radial-gradient(ellipse 55% 50% at 50% 50%,#163d5a 0%,#081723 53%,#02070d 100%);border-color:#3f7188;box-shadow:inset 0 0 60px #000,inset 0 0 0 5px #050910,0 0 18px #45dcff1a}
+.arcade-conveyor{bottom:2%;height:78%}
+.arcade-conveyor__rail{bottom:10%;height:27%;border-color:#3a7794;background:repeating-linear-gradient(90deg,#111d27 0 25px,#345264 25px 29px)}
+.arcade-conveyor__cards{bottom:15%;gap:clamp(9px,.72vw,15px)}
+.arcade-conveyor__card{flex-basis:clamp(92px,6.8vw,136px);transform:perspective(360px) rotateY(9deg) scale(.86);opacity:.7}
+.arcade-conveyor__card:nth-child(even){transform:perspective(360px) rotateY(-9deg) scale(.9)}
+.arcade-conveyor__card[data-selected-card]{transform:scale(1.14);opacity:1;filter:brightness(1.08)}
+.arcade-card--back{min-height:clamp(116px,15vh,162px);border:2px solid #da3a9d;background:repeating-linear-gradient(45deg,#240b2c 0 10px,#091728 10px 20px);box-shadow:inset 0 0 24px #ff45c522,0 0 16px #ff42bd2f}
+.arcade-conveyor__selector{top:4%;bottom:4%;width:clamp(112px,8.5vw,165px);border-color:#ffad37;box-shadow:0 0 28px #ffac3470,inset 0 0 20px #ffac3418}
+.arcade-status{border-color:#9b6d25;background:linear-gradient(90deg,#0d130c,#1a1b0d,#0d130c);box-shadow:inset 0 0 18px #ffc23a2b,0 0 12px #ffae2520}
+.arcade-result{border:2px solid #ff49bfaa;background:linear-gradient(150deg,#151125f4,#060b14f7 58%,#10172af5);box-shadow:0 0 28px #ff43ba30,inset 0 0 42px #3bdfff0c}
+.arcade-result>header{border-bottom-color:#ff4cb78a;background:linear-gradient(90deg,#31112c,#0c1e2b 52%,#1c1024);color:#ffd8f4}
+.arcade-result__card{margin:1vh .25vw;border-color:#ff55c955;background:radial-gradient(ellipse at center,#172a3b 0%,#080d15 68%);box-shadow:inset 0 0 35px #0008,0 0 18px #ff43bd18}
+.arcade-result__group{margin:0 4px 3px;min-height:clamp(74px,10vh,112px)}
+.arcade-groups{border-color:#517083;background:linear-gradient(180deg,#1a2b36,#070c12 18%);box-shadow:inset 0 0 32px #44e5ff10,0 0 20px #0008}
+.arcade-group{background:linear-gradient(180deg,color-mix(in srgb,var(--group-accent) 13%,#0a131d),#050a10);box-shadow:inset 0 0 16px color-mix(in srgb,var(--group-accent) 8%,transparent)}
+.arcade-group header{background:color-mix(in srgb,var(--group-accent) 13%,transparent);border-radius:7px 7px 0 0}
+.arcade-history{border-color:#3dbce777;background:linear-gradient(90deg,#102333,#050a10 20%);box-shadow:inset 0 0 28px #4beaff0c}
+.arcade-history__team{align-self:center;height:min(11vh,112px);border-color:#4d91ae;background:linear-gradient(145deg,#173246,#09121c);border-radius:9px}
+.arcade-motto{border-color:#55eaff;box-shadow:inset 0 0 26px #4beeff1f,0 0 20px #40dfff35}
+
+/* Physical machine controls for the real Undo and Reset actions. */
+.arcade-deck-actions{position:relative;z-index:12;display:flex;align-items:center;gap:clamp(9px,.8vw,15px);pointer-events:auto}
+.arcade-mini-button{display:grid;width:clamp(46px,3.5vw,64px);height:clamp(42px,5.3vh,58px);padding:0;place-items:center;border:4px solid #284656;border-radius:50%;background:radial-gradient(circle at 40% 28%,#b9fbff,#33cddd 35%,#0a6378 72%);box-shadow:inset 0 -6px 0 #064757,inset 0 3px 5px #fff6,0 5px 0 #06131a,0 0 16px #40e9ff66;color:#031016;cursor:pointer;pointer-events:auto;transition:transform .12s,filter .12s,box-shadow .12s}
+.arcade-mini-button b{font-size:clamp(15px,1.2vw,22px);line-height:.7}
+.arcade-mini-button span{font-size:clamp(6px,.42vw,8px);font-weight:900;letter-spacing:.08em}
+.arcade-mini-button--reset{border-color:#67431d;background:radial-gradient(circle at 40% 28%,#fff0a1,#ffad36 36%,#b74c20 74%);box-shadow:inset 0 -6px 0 #762c17,inset 0 3px 5px #fff7,0 5px 0 #25100a,0 0 16px #ff9f3566;color:#211006}
+.arcade-mini-button:hover:not(:disabled){filter:brightness(1.18)}
+.arcade-mini-button:active:not(:disabled){transform:translateY(4px) scale(.96);box-shadow:inset 0 -2px 0 #052d38,0 1px 0 #06131a,0 0 12px #40e9ff88}
+.arcade-mini-button:disabled{filter:grayscale(.9);opacity:.35;cursor:not-allowed}
+.arcade-deck-actions>small{display:grid;align-items:center;grid-template-columns:6px 1fr;gap:5px;color:#6f8f9f;font-size:clamp(6px,.4vw,8px);letter-spacing:.08em}
+.arcade-deck-actions>small i{width:5px;height:5px;border-radius:50%;background:#4df2f2;box-shadow:0 0 8px #4df2f2}
+
+/* Conveyor cards show the two real participants instead of a generic card back. */
+.arcade-conveyor .arcade-card{min-height:clamp(126px,16vh,174px);padding:7px;border:2px solid #d83b9c;border-radius:10px;background:linear-gradient(150deg,#1d1530,#091522 58%,#15112a);box-shadow:0 0 14px #ff42bd30,inset 0 0 18px #48ddff0d;clip-path:none}
+.arcade-conveyor .arcade-card:after{background:repeating-linear-gradient(135deg,transparent 0 10px,#ff51bd0a 10px 11px)}
+.arcade-conveyor .arcade-card header{color:#9defff;font-size:clamp(6px,.42vw,8px)}
+.arcade-conveyor .arcade-card header i{color:#ff62c5}
+.arcade-conveyor .arcade-card__portraits{height:62%;margin:6px 0 5px;gap:3px}
+.arcade-conveyor .arcade-portrait{width:48%;border:1px solid #4cdff2;border-radius:4px;background:#102131}
+.arcade-conveyor .arcade-portrait span{color:#8befff;font-size:clamp(9px,.8vw,15px)}
+.arcade-conveyor .arcade-card>strong{overflow:hidden;color:#effcff;font-size:clamp(6px,.43vw,9px);line-height:1.1;text-overflow:ellipsis;white-space:nowrap}
+.arcade-conveyor .arcade-card>small{display:none}
+.arcade-conveyor__card[data-selected-card] .arcade-card{border-color:#ffb43c;box-shadow:0 0 24px #ffad3c70,inset 0 0 20px #ffae3516}
+
+/* History mini cards: two people, two portraits, each with its own name. */
+.arcade-history__team{display:grid;flex:0 0 clamp(132px,9vw,172px);height:min(11vh,112px);padding:5px;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);border-radius:9px}
+.arcade-history__team>b{padding:0 2px 3px;color:var(--a);font-size:clamp(8px,.58vw,11px);line-height:1}
+.arcade-history__people{display:flex;min-height:0;grid-row:2;gap:5px;border:0!important;overflow:visible!important}
+.arcade-history__people figure{display:grid;min-width:0;margin:0;flex:1;grid-template-rows:minmax(0,1fr) auto;overflow:hidden;border:1px solid #4c9cb5;border-radius:5px;background:#102432}
+.arcade-history__people figure img{width:100%;height:100%;min-height:0;object-fit:cover}
+.arcade-history__people figure span{display:grid;width:100%;height:100%;place-items:center;color:var(--c);font-size:clamp(8px,.6vw,11px);font-weight:800}
+.arcade-history__people figcaption{padding:2px 3px;overflow:hidden;background:#07111a;color:#d6f5ff;font-size:clamp(6px,.4vw,8px);font-weight:700;line-height:1.2;text-align:center;text-overflow:ellipsis;white-space:nowrap}
+
+/* Keep the conveyor clean: one visible card per team, without the extra slot grid or selector frame. */
+.arcade-conveyor__rail,.arcade-conveyor__selector{display:none}
+.arcade-conveyor__cards{bottom:9%;align-items:end}
+.arcade-conveyor__card{margin:0;filter:saturate(.72) drop-shadow(0 7px 8px #0008)}
+.arcade-conveyor__card[data-selected-card]{filter:brightness(1.1) saturate(1) drop-shadow(0 0 16px #ffad3c88)}
+
+/* Group slots only show the two participant names, large and readable. */
+.arcade-group .arcade-card--compact{display:flex;height:100%;min-height:0;padding:0 10px;align-items:center;border:0;border-left:3px solid var(--group-accent);border-radius:6px;background:linear-gradient(90deg,color-mix(in srgb,var(--group-accent) 12%,#0a1620),#08111a);box-shadow:none}
+.arcade-group .arcade-card--compact>strong{display:block;width:100%;margin:0;overflow:hidden;color:#f2fbff;font-family:'Segoe UI',Arial,sans-serif;font-size:clamp(9px,.62vw,13px);font-weight:800;letter-spacing:.01em;line-height:1.1;text-align:left;text-overflow:ellipsis;text-shadow:0 0 8px color-mix(in srgb,var(--group-accent) 30%,transparent);white-space:nowrap}
+
+/* Final conveyor sizing: wider and taller cards that fit the center frame. */
+.arcade-conveyor__cards{gap:clamp(10px,.8vw,18px)}
+.arcade-conveyor__card{flex-basis:clamp(125px,9vw,190px)}
+.arcade-conveyor .arcade-card{min-height:clamp(320px,48vh,520px);padding:10px}
+
+/* Final highlight state: the gold border appears only during result reveal. */
+.arcade-conveyor__card[data-selected-card] .arcade-card{border-color:#d83b9c;box-shadow:0 0 14px #ff42bd30,inset 0 0 18px #48ddff0d}
+.arcade-show--revealing .arcade-conveyor__card[data-selected-card] .arcade-card,
+.arcade-show--groupScanning .arcade-conveyor__card[data-selected-card] .arcade-card,
+.arcade-show--dealing .arcade-conveyor__card[data-selected-card] .arcade-card{border-color:#ffb43c;box-shadow:0 0 24px #ffad3c70,inset 0 0 20px #ffae3516}
+
+/* Final conveyor framing: upright, slightly shorter, and fully visible cards. */
+.arcade-conveyor__cards{bottom:6%}
+.arcade-conveyor__card,.arcade-conveyor__card:nth-child(even){transform:none}
+.arcade-conveyor__card[data-selected-card]{transform:scale(1.04)}
+.arcade-conveyor .arcade-card{min-height:clamp(250px,38vh,420px)}
+
+/* Center the marquee title and use its subtitle for the tournament configuration. */
+.arcade-conveyor__card{flex-basis:clamp(300px,22.5vw,475px)}
+.arcade-marquee>div{position:absolute;left:50%;transform:translateX(-50%);justify-items:center;text-align:center;white-space:nowrap}
+.arcade-marquee>div small{color:#9ed8e8;font-size:clamp(7px,.52vw,10px);letter-spacing:.12em;text-transform:uppercase}
+
+/* Keep the selected players visible alongside the group result after the draw. */
+.arcade-result__group{min-height:clamp(96px,13vh,146px)}
+.arcade-result__group-people{display:flex;max-width:100%;gap:10px;justify-content:center;flex-wrap:wrap}
+.arcade-result__group-people span{max-width:none;overflow:visible;padding:0;border:0;border-radius:0;background:none;color:#dffaff;font-family:'Segoe UI',Arial,sans-serif;font-size:clamp(12px,.72vw,17px);font-weight:800;line-height:1.15;text-align:center;text-overflow:clip;white-space:normal;overflow-wrap:anywhere}
+
+/* Shorter conveyor cards keep the larger width without clipping the screen. */
+.arcade-conveyor .arcade-card{min-height:clamp(190px,28vh,320px)}
+
+/* Let the supplied background retain more of its original detail and sharp neon signage. */
+.arcade-background{background-image:linear-gradient(180deg,#02050b88 0%,#02050b22 48%,#02050bb8 100%),var(--arcade-bg-image);filter:none}
+.arcade-background:before{opacity:.45}
+
+/* Compact the selected-team panel so its card and group result fit the marked frame. */
+.arcade-result{height:86%;align-self:end}
+
+/* Use the supplied arcade hall image as the full-screen show background. */
+.arcade-background{background-color:#02050b;background-image:linear-gradient(180deg,#02050bcc 0%,#02050b55 45%,#02050be8 100%),var(--arcade-bg-image);background-position:center;background-repeat:no-repeat;background-size:cover}
+.arcade-background:before{background:linear-gradient(90deg,#02050b66,transparent 18% 82%,#02050b66),radial-gradient(ellipse at center,transparent 35%,#0009)}
+.arcade-background:after{opacity:.45}
+
+/* Fine tune the conveyor frame: slightly lower and narrower cards. */
+.arcade-conveyor__cards{bottom:3%}
+.arcade-conveyor__card{flex-basis:clamp(270px,20vw,420px)}
+
+/* Keep the supplied hall photo crisp and let its neon detail read through the UI. */
+.arcade-background{background-image:linear-gradient(180deg,#02050b22 0%,#02050b00 52%,#02050b55 100%),var(--arcade-bg-image);background-size:cover;background-position:center;image-rendering:auto}
+.arcade-background:before{background:linear-gradient(90deg,#02050b22,transparent 18% 82%,#02050b22),radial-gradient(ellipse at center,transparent 38%,#0003);opacity:.3}
+.arcade-background:after{opacity:.18}
+
+/* Group board: compact horizontal arcade panels matching the colored reference UI. */
+.arcade-groups{padding:0;gap:clamp(6px,.7vw,12px);border:0;background:transparent;box-shadow:none;overflow:visible}
+.arcade-group{grid-template-rows:clamp(34px,5vh,48px) minmax(0,1fr);padding:0;border:2px solid color-mix(in srgb,var(--group-accent) 80%,#183044);border-radius:11px;background:linear-gradient(180deg,color-mix(in srgb,var(--group-accent) 18%,#0b1724),#07111c 32%,#07111b);box-shadow:0 5px 14px #0008,inset 0 0 20px color-mix(in srgb,var(--group-accent) 9%,transparent);overflow:hidden}
+.arcade-group header{min-height:0;padding:0 9px;justify-content:center;border-bottom:2px solid var(--group-accent);border-radius:0;background:linear-gradient(180deg,color-mix(in srgb,var(--group-accent) 28%,#112235),color-mix(in srgb,var(--group-accent) 12%,#0c1724));text-align:center}
+.arcade-group header strong{color:#f5fbff;font-size:clamp(12px,1.05vw,20px);font-weight:800;letter-spacing:.02em;text-shadow:0 1px 4px #000}
+.arcade-group header span{display:none}
+.arcade-group__slots{height:auto;padding:6px;gap:5px;grid-template-rows:repeat(var(--group-capacity),minmax(0,1fr))!important;grid-template-columns:1fr!important}
+.arcade-group__slot{padding:0;border:1px solid color-mix(in srgb,var(--group-accent) 40%,#24384b);border-radius:7px;background:linear-gradient(90deg,color-mix(in srgb,var(--group-accent) 7%,#0c1724),#0b1723 70%,color-mix(in srgb,var(--group-accent) 4%,#0b1723));box-shadow:inset 0 1px 0 #ffffff08}
+.arcade-group__slot:before{left:10px;color:#f0f7ff;font-size:clamp(11px,.78vw,16px);font-weight:800}
+.arcade-group__slot:not(.arcade-group__slot--filled):after{position:absolute;right:11px;left:29px;top:50%;height:1px;background:color-mix(in srgb,var(--group-accent) 48%,#567080);content:""}
+.arcade-group .arcade-card--compact{padding:0 8px 0 34px;border:0;border-left:3px solid var(--group-accent);border-radius:5px;background:linear-gradient(90deg,color-mix(in srgb,var(--group-accent) 16%,#0b1724),#0a1521);box-shadow:none}
+.arcade-group .arcade-card--compact>strong{font-size:clamp(10px,.68vw,15px);font-weight:800;letter-spacing:.01em;text-shadow:none}
+.arcade-group--active{transform:translateY(-2px);box-shadow:0 0 20px color-mix(in srgb,var(--group-accent) 42%,transparent),0 5px 14px #0008}
+
+/* Drawn-team history: a compact photo rail with the count inline in its title. */
+.arcade-history{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);padding:8px 10px 9px;border:1px solid #315a6e;border-radius:12px;background:linear-gradient(180deg,#071b29e8,#020a12ed);box-shadow:inset 0 0 25px #3bdfff0d,0 0 16px #0009}
+.arcade-history>header{display:flex;min-height:24px;padding:0 2px 6px;align-items:center;gap:5px;border-right:0;border-bottom:1px solid #25495b}
+.arcade-history>header span{color:#f2fbff;font-size:clamp(12px,.78vw,17px);font-weight:800;letter-spacing:.02em}
+.arcade-history>header span b{color:#62e9ff;font:inherit;font-weight:800}
+.arcade-history>header i{display:none}
+.arcade-history__rail{padding:6px 0 0;align-items:stretch;gap:clamp(7px,.55vw,11px);overflow-x:auto}
+.arcade-history__team{display:grid;flex:0 0 clamp(72px,5.6vw,102px);height:clamp(72px,10vh,104px);padding:4px;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;border:1px solid #4d8ba2;border-radius:8px;background:linear-gradient(145deg,#19364a,#081723 72%);box-shadow:inset 0 0 12px #5eeaff17,0 3px 8px #0008}
+.arcade-history__people{grid-row:1;display:flex;min-height:0;gap:3px;border:0!important;overflow:hidden!important}
+.arcade-history__people figure{display:block;min-width:0;margin:0;flex:1;overflow:hidden;border:1px solid #4c9cb5;border-radius:4px;background:#102432}
+.arcade-history__people figure img{display:block;width:100%;height:100%;object-fit:cover}
+.arcade-history__people figure span{display:grid;width:100%;height:100%;place-items:center;color:#8befff;font-size:clamp(8px,.6vw,11px);font-weight:800}
+.arcade-history__people figcaption{display:none}
+.arcade-history__team>b{grid-row:2;padding:2px 0 0;color:#f5fbff;font-family:'Segoe UI',Arial,sans-serif;font-size:clamp(16px,1.15vw,23px);font-weight:900;line-height:1;text-align:center;text-shadow:0 1px 4px #000}
+
+/* Keep the group board as one complete framed surface, including when only a
+   few groups are configured. */
+.arcade-groups{min-width:0;padding:7px;border:2px solid #315a6e;border-radius:12px;background:linear-gradient(180deg,#071b29d9,#020a12e8);box-shadow:inset 0 0 24px #3bdfff0c,0 0 16px #0008;overflow:hidden}
+.arcade-groups--compact{width:max-content;max-width:100%;justify-self:start;padding:7px;grid-template-columns:repeat(var(--arcade-group-count),minmax(180px,260px));}
+
+/* Compact layouts still use the full board frame, while each table keeps an
+   equal column width and equal height. Empty slots get a soft blurred color
+   treatment instead of a sharp placeholder line. */
+.arcade-groups{align-items:stretch;grid-auto-rows:minmax(0,1fr)}
+.arcade-groups--compact{width:100%;max-width:none;justify-self:stretch;grid-template-columns:repeat(var(--arcade-group-count),minmax(0,260px));align-items:stretch}
+.arcade-group{height:100%;align-self:stretch}
+.arcade-group__slot:not(.arcade-group__slot--filled){border-color:color-mix(in srgb,var(--group-accent) 28%,#294153);background:linear-gradient(135deg,color-mix(in srgb,var(--group-accent) 15%,#142536),#0b1723 55%,color-mix(in srgb,var(--group-accent) 9%,#0b1723));box-shadow:inset 0 0 22px color-mix(in srgb,var(--group-accent) 18%,transparent),0 0 10px color-mix(in srgb,var(--group-accent) 8%,transparent);filter:blur(.15px)}
+.arcade-group__slot:not(.arcade-group__slot--filled):after{display:none}
+
+/* History cards are photo-only; remove the ordinal label and let the portraits
+   use the full card height. */
+.arcade-history__team{grid-template-rows:minmax(0,1fr);padding:4px}
+.arcade-history__people{grid-row:1}
+
+/* Group labels use the entered casing and a clean full-width slot surface. */
+.arcade-group .arcade-card--compact{border-left:0}
+.arcade-group .arcade-card--compact>strong{font-size:clamp(11px,.74vw,16px);text-transform:none}
+.arcade-group header strong{font-size:clamp(14px,1.15vw,22px)}
+
+/* Force every table to share the exact same track height; active highlighting
+   must not scale one table beyond its neighbors. */
+.arcade-groups{grid-template-rows:minmax(0,1fr)}
+.arcade-groups>.arcade-group{height:100%;min-height:0;align-self:stretch;transform:none}
+.arcade-groups>.arcade-group--active{transform:none}
+
+/* Small breathing room between the outer frame and each table card. */
+.arcade-groups,.arcade-groups--compact{padding:5px}
+
+/* The 5px inset belongs to the complete board container, not the individual
+   slots; keep it enforced for compact and full layouts alike. */
+.arcade-groups{padding:5px!important;gap:5px;border-color:#3b6a80;background-clip:padding-box}
+.arcade-groups--compact{padding:5px!important;gap:5px}

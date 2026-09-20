@@ -1,0 +1,209 @@
+@font-face {
+  font-family:"Pixel Arcade";
+  src:url('../../../assets/fonts/fontpixel.ttf') format('truetype');
+  font-display:swap;
+}
+
+/* Cabinet composition inspired by dr1. Keep all controls and results live. */
+.arcade-show .arcade-shell {
+  width: 100%; height: 100svh; transform: none;
+  padding: 12px clamp(12px, 2vw, 36px) 16px;
+  grid-template-rows: 54px minmax(0, 1fr) minmax(150px, 19vh) minmax(100px, 14vh);
+  gap: 12px;
+}
+.arcade-show-brand { display:flex; align-items:center; justify-content:space-between; }
+.arcade-show-brand div { display:grid; }
+.arcade-show-brand strong { font:italic 900 clamp(28px,3vw,48px)/.9 'Arial Black',sans-serif; letter-spacing:-2px; color:#fff; text-shadow:-3px 3px 0 #983ed0,0 0 18px #ff48c2; }
+.arcade-show-brand div>span { margin-top:6px; color:#6beeff; font-size:10px; letter-spacing:.34em; }
+.arcade-show-brand p { margin:0; position:relative; padding-right:42px; color:#8cefff; font:italic 18px/1.05 cursive; text-align:right; text-shadow:0 0 12px #30cfff; }
+.arcade-show-brand p span { position:absolute; right:0; top:0; font-size:38px; }
+.arcade-show .arcade-main-stage { grid-template-columns:minmax(0, 1fr) minmax(260px, 28%); gap:clamp(16px,2vw,32px); }
+.arcade-show .arcade-machine { min-width:0; padding:0 6px; }
+.arcade-show .arcade-marquee {
+  height:clamp(70px,9vh,100px); margin:0 0 -4px; z-index:4;
+  border:3px solid #af6b55; border-radius:14px 14px 22px 22px;
+  background:linear-gradient(140deg,#86b1c6 0%,#172c4b 5%,#121729 12%,#533035 50%,#101a32 82%,#68779a 96%,#142538);
+  box-shadow:inset 0 0 0 4px #0a1325,inset 0 -7px 0 #503951,0 3px 0 #ec9b4a,0 8px 24px #ff8b2540;
+}
+.arcade-show .arcade-marquee:before { inset:9px 6%; border:1px solid #665cc5; border-radius:9px; background:repeating-linear-gradient(0deg,#0000 0 2px,#47a4ff0e 2px 3px),#040919; clip-path:none; box-shadow:0 0 10px #a14ce155,inset 0 0 16px #225fff40; }
+.arcade-show .arcade-marquee>div { width:74%; z-index:1; }
+.arcade-show .arcade-marquee strong { max-width:100%; white-space:normal; font-size:clamp(22px,2.5vw,43px); line-height:1.1; color:#ffbc53; text-shadow:0 0 5px #ff622e,0 0 17px #ff622e; }
+.arcade-show .arcade-marquee div>span { display:none; }
+.arcade-show .arcade-marquee small { margin-top:5px; font-size:8px; color:#8bdfff; }
+.arcade-show .arcade-marquee>b { position:absolute; right:8%; font-size:25px; }
+.arcade-show .arcade-machine__body {
+  min-height:0; margin:0 1%; padding:12px 13px 8px; border:3px solid #3a526b; border-top:0; border-radius:0 0 18px 18px;
+  grid-template-rows:minmax(0,1fr) 110px;
+  background:linear-gradient(100deg,#583644,#172434 3%,#07111ddd 8% 92%,#263b50 97%,#683b31);
+  box-shadow:inset 4px 0 #bc775740,inset -4px 0 #ac63ba50,0 0 0 2px #060e17,0 10px 28px #000a;
+}
+.arcade-show .arcade-machine__screen { overflow:hidden; border:1px solid #366079; border-radius:8px 8px 0 0; background:radial-gradient(ellipse at 50% 90%,#6c26516b,transparent 65%),linear-gradient(#041020e8,#0b1e2bdd); box-shadow:inset 0 0 35px #0009; }
+.arcade-show .arcade-machine__screen:after { opacity:.3; }
+.arcade-show .arcade-machine__telemetry { top:12px; padding:9px 12px; border:1px solid #25769588; border-radius:6px; background:#021527d9; box-shadow:inset 0 0 16px #008dff16; gap:3px; font-size:10px; }
+.arcade-show .arcade-machine__telemetry b { color:#36d8ff; font:700 12px 'Segoe UI',sans-serif; }
+.arcade-show .arcade-machine__telemetry small { font-size:8px; }
+.arcade-show .arcade-scanner { top:0; width:108px; height:98px; }
+.arcade-show .arcade-scanner i { left:14px; width:80px; height:42px; border:3px solid #7196a7; background:linear-gradient(90deg,#0b1120,#65777e 25%,#121f35 40% 65%,#776376 80%,#152639); clip-path:polygon(0 0,100% 0,88% 100%,12% 100%); }
+.arcade-show .arcade-scanner b { left:33px; top:40px; width:42px; height:36px; border:4px solid #98796b; border-radius:0 0 10px 10px; background:linear-gradient(90deg,#142337,#708896,#102339); box-shadow:0 5px 12px #ff9d5144; }
+.arcade-show .arcade-scanner span { top:76px; left:41px; width:26px; height:8px; background:#ffd283; box-shadow:0 0 15px #ff7e24,0 12px 25px 8px #bd53ff80; }
+.arcade-show .arcade-conveyor { top:82px; bottom:8px; height:auto; }
+.arcade-show .arcade-conveyor__cards { top:100px; bottom:40px; height:auto; align-items:stretch; gap:14px; }
+.arcade-show .arcade-conveyor__cards { gap:clamp(20px,1.8vw,32px); }
+.arcade-show .arcade-conveyor__card { flex-basis:clamp(145px,14vw,250px); min-height:0; transform:none; opacity:.85; filter:none; }
+.arcade-show .arcade-conveyor .arcade-card { display:flex; flex-direction:column; height:100%; min-height:0; padding:7px; border:1px solid #d382c9; border-radius:9px; background:linear-gradient(140deg,#223148,#07121d 70%); box-shadow:inset 0 0 0 3px #0a1120,0 0 12px #ec48d51f; }
+.arcade-show .arcade-conveyor .arcade-card header { font-size:8px; }
+.arcade-show .arcade-conveyor .arcade-card__portraits { flex:1; min-height:0; height:auto; margin:5px 0; gap:3px; }
+.arcade-show .arcade-conveyor .arcade-portrait { width:50%; border:1px solid #72bacc; }
+.arcade-show .arcade-conveyor .arcade-card>strong { flex:none; font-size:clamp(9px,.7vw,13px); padding:4px 0; white-space:normal; text-transform:none; }
+.arcade-show .arcade-conveyor__card:before { display:none; }
+.arcade-show .arcade-status { margin:0; border:3px solid #ad7940; border-radius:6px; background:linear-gradient(90deg,#0b1732,#08132a,#141024); box-shadow:inset 0 0 0 3px #151f32,0 0 9px #ffa33755; color:#6fedff; }
+.arcade-show .arcade-status strong { font-size:clamp(12px,1vw,18px); letter-spacing:.12em; color:#85ecff; text-shadow:0 0 12px #2279ff; }
+.arcade-show .arcade-status>span { display:none; }
+.arcade-show .arcade-control-deck { padding:8px 22px; clip-path:none; border:3px solid #ad7940; border-radius:6px; background:linear-gradient(170deg,#324154,#0b101c 35%,#121b28 75%,#445469); border-bottom:4px solid #213c53; box-shadow:inset 0 0 0 3px #151f32,0 0 9px #ffa33755; }
+.arcade-show .arcade-console-mark { transform:skew(-12deg); }
+.arcade-show .arcade-console-mark b { font-size:clamp(16px,1.6vw,28px); color:#85ecff; text-shadow:0 0 12px #2279ff; }
+.arcade-show .arcade-console-mark small { color:#718aa3; font-size:7px; letter-spacing:.25em; }
+.arcade-show .arcade-push { width:86px; height:50px; color:#fff4dc; font-size:17px; border-color:#873a2a; box-shadow:inset 0 -7px #840d14,inset 0 3px 4px #fff9,0 5px #301117,0 0 17px #ff433d99; }
+.arcade-show .arcade-push { width:68px; height:68px; border:5px solid #63221d; border-radius:50%; background:radial-gradient(circle at 36% 25%,#fff1bb 0 7%,#ff9e4d 18%,#f13b2e 44%,#a3111c 76%); box-shadow:inset 0 -9px 0 #78101a,inset 0 4px 7px #fff9,0 6px 0 #260b12,0 0 26px #ff403dba; font-size:16px; }
+.arcade-show .arcade-push:before { position:absolute; inset:-8px; border:1px solid #ff8b6599; border-radius:50%; content:""; box-shadow:0 0 12px #ff443f88; pointer-events:none; }
+.arcade-show .arcade-push:hover:not(:disabled) { filter:brightness(1.18) saturate(1.12); transform:scale(1.04); }
+.arcade-show .arcade-push:active:not(:disabled) { transform:translateY(4px) scale(.96); }
+.arcade-show .arcade-mini-button { width:50px; height:50px; border-width:3px; border-radius:50%; }
+.arcade-show .arcade-mini-button--undo { border-color:#2b748d; background:radial-gradient(circle at 38% 25%,#d5ffff 0 8%,#54e7ee 30%,#087a91 72%); box-shadow:inset 0 -6px 0 #075066,inset 0 3px 5px #fff8,0 5px 0 #06131a,0 0 18px #36eaff88; }
+.arcade-show .arcade-mini-button--reset { border-color:#885325; background:radial-gradient(circle at 38% 25%,#fff5bb 0 8%,#ffc24e 30%,#bd4d1f 72%); box-shadow:inset 0 -6px 0 #782a18,inset 0 3px 5px #fff8,0 5px 0 #25100a,0 0 18px #ff9f3588; }
+.arcade-show .arcade-mini-button b { font-size:18px; }
+.arcade-show .arcade-mini-button span { font-size:6px; }
+.arcade-show .arcade-result { height:100%; align-self:stretch; min-width:0; padding:0 12px 12px; grid-template-rows:42px minmax(0,1fr) 82px; border:2px solid #f082d0; border-radius:18px 18px 12px 12px; background:linear-gradient(145deg,#32132fd9,#071222ed 40%,#0e0b1ce8); box-shadow:0 0 0 4px #170e22,0 0 22px #fa43c650,inset 0 0 18px #f441ae20; }
+.arcade-show .arcade-result>header { height:42px; margin:0; padding:0; justify-content:center; border:0; background:none; color:#ffbfe9; text-align:center; font-size:clamp(16px,1.5vw,26px); }
+.arcade-show .arcade-result>header { display:flex; visibility:hidden; }
+.arcade-show .arcade-result>header i,.arcade-show .arcade-result>header b { display:none; }
+.arcade-show .arcade-result__card { margin:20px 0 40px; border:0; background:none; box-shadow:none; overflow:hidden; }
+.arcade-show .arcade-result__card:before { display:none; }
+.arcade-show .arcade-result__card>.arcade-card { display:flex; flex-direction:column; width:100%; height:100%; min-height:0; padding:9px; border:2px solid #ffd079; border-radius:10px; background:linear-gradient(135deg,#ffca63 0 4%,#122131 4% 84%,#a87934 84% 87%,#f3c567 87%); box-shadow:inset 0 0 0 4px #514331,0 0 15px #ffc96666; }
+.arcade-show .arcade-result__card>.arcade-card { width:calc(100% - 36px); margin-inline:auto; }
+.arcade-show .arcade-result__card>.arcade-card:before { display:none; }
+.arcade-show .arcade-result__card>.arcade-card:after { opacity:.15; }
+.arcade-show .arcade-result__card>.arcade-card header { display:none; }
+.arcade-show .arcade-result__card>.arcade-card .arcade-card__portraits { flex:1; min-height:0; height:auto; margin:0 0 8px; gap:3px; }
+.arcade-show .arcade-result__card>.arcade-card .arcade-portrait { width:50%; border:0; box-shadow:none; }
+.arcade-show .arcade-result__card>.arcade-card>strong { font-size:clamp(14px,1.2vw,22px); line-height:1.2; text-transform:none; padding:2px 0; }
+.arcade-show .arcade-result__card>.arcade-card>small { font-size:8px; color:#ffd196; padding:3px 0; }
+.arcade-show .arcade-result__group { min-height:0; margin:0; padding:8px; gap:8px; border-radius:6px; border-color:#409fc5; background:linear-gradient(100deg,#081c31,#092e42,#061427); }
+.arcade-show .arcade-result__group strong { font-size:clamp(23px,2vw,38px); line-height:1; }
+.arcade-show .arcade-result__group-people span { font-size:clamp(11px,.85vw,16px); }
+.arcade-show .arcade-groups { box-sizing:border-box; width:100%; padding:8px!important; gap:10px; align-items:stretch; align-content:stretch; border:1px solid #537b90; border-radius:12px; background:#02111ddd; backdrop-filter:blur(10px); }
+.arcade-show .arcade-groups>.arcade-group { height:auto; min-height:0; margin:0; grid-template-rows:30px minmax(0,1fr); transform:none; border-width:1px; border-radius:9px; box-shadow:inset 0 0 14px color-mix(in srgb,var(--group-accent) 14%,transparent); }
+.arcade-show .arcade-group>header { min-height:0; padding:0 4px; border-bottom-width:1px; }
+.arcade-show .arcade-group>header strong { font-size:clamp(12px,1vw,18px); }
+.arcade-show .arcade-group__slots { height:auto; padding:5px; gap:4px; }
+.arcade-show .arcade-group__slot { overflow:hidden; }
+.arcade-show .arcade-group__slot:before { font:600 12px 'Segoe UI',sans-serif; left:7px; }
+.arcade-show .arcade-group__slot--filled:before { display:none; }
+.arcade-show .arcade-group .arcade-card--compact { padding:4px 8px; border:0; background:transparent; }
+.arcade-show .arcade-group .arcade-card--compact:after { display:none; }
+.arcade-show .arcade-group .arcade-card--compact>strong { font-size:clamp(10px,.8vw,15px); font-weight:600; white-space:normal; overflow-wrap:anywhere; line-height:1.2; text-transform:none; }
+.arcade-show .arcade-history { padding:6px 12px 8px; background:#02111ded; border:1px solid #4a91aa; border-radius:10px; }
+.arcade-show .arcade-history>header { min-height:22px; padding-bottom:4px; }
+.arcade-show .arcade-history__rail { min-height:0; padding:5px 0 0; gap:12px; }
+.arcade-show .arcade-history__team { align-self:stretch; height:100%; flex-basis:125px; padding:5px; grid-template-rows:minmax(0,1fr); }
+.arcade-show .arcade-history__team>.arcade-history__people { grid-row:1; grid-column:1; gap:2px; }
+.arcade-show .arcade-history__empty { font:500 11px 'Segoe UI',sans-serif; letter-spacing:.05em; }
+.arcade-show .arcade-conveyor__card[data-selected-card] .arcade-card {
+  border:2px solid #d83b9c;
+  filter:none;
+  box-shadow:0 0 14px #ff42bd30,inset 0 0 18px #48ddff0d;
+}
+.arcade-show .arcade-conveyor .arcade-card > header { display:none; }
+.arcade-show .arcade-machine__body { background:transparent; }
+.arcade-show .arcade-machine__screen {
+  background:transparent;
+  box-shadow:none;
+}
+.arcade-show .arcade-machine__screen:after {
+  background:repeating-linear-gradient(0deg,transparent 0 3px,#83edff08 3px 4px);
+}
+.arcade-show .arcade-scanner {
+  top:-18px;
+  width:118px;
+  height:142px;
+  transform:translateX(-50%);
+}
+.arcade-show .arcade-scanner img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:top center;
+  filter:drop-shadow(0 0 10px #ff9c31aa);
+}
+.arcade-show .arcade-scanner > i,
+.arcade-show .arcade-scanner > b,
+.arcade-show .arcade-scanner > span { display:none; }
+.arcade-show .arcade-machine__telemetry--left { display:none; }
+.arcade-show--locked .arcade-conveyor__card[data-selected-card] .arcade-card {
+  border-color:#ffffff;
+  box-shadow:0 0 0 2px #fff5b8,0 0 18px #fff5c4,0 0 42px #ffb52fee,inset 0 0 26px #fff5b844;
+}
+.arcade-show .arcade-background__cabinet,.arcade-show .arcade-background__sign,.arcade-show .arcade-background__floor,.arcade-show .arcade-background__beam { display:none; }
+.arcade-show {
+  --d:"Pixel Arcade","Courier New","Lucida Console",monospace;
+  font-family:"Pixel Arcade","Courier New","Lucida Console",monospace;
+  -webkit-font-smoothing:none;
+  font-smooth:never;
+}
+.arcade-show button,
+.arcade-show small,
+.arcade-show span,
+.arcade-show p,
+.arcade-show h1,
+.arcade-show h2,
+.arcade-show h3,
+.arcade-show strong,
+.arcade-show b,
+.arcade-show header { font-family:"Pixel Arcade","Courier New","Lucida Console",monospace; }
+.arcade-show .arcade-marquee strong,
+.arcade-show .arcade-console-mark b,
+.arcade-show .arcade-console-mark span {
+  font-family:"Pixel Arcade","Courier New","Lucida Console",monospace;
+  font-style:normal;
+  letter-spacing:.08em;
+  text-shadow:0 0 8px currentColor;
+}
+.arcade-show .arcade-group header strong,
+.arcade-show .arcade-group header span,
+.arcade-show .arcade-group__slot:before,
+.arcade-show .arcade-group .arcade-card--compact>strong,
+.arcade-show .arcade-history>header span,
+.arcade-show .arcade-history__team>b,
+.arcade-show .arcade-history__empty {
+  font-family:"Pixel Arcade","Courier New","Lucida Console",monospace;
+}
+.arcade-show .arcade-result__waiting>b {
+  width:clamp(105px,9vw,165px);
+  border:2px solid #ffad37;
+  color:#ffad37;
+  text-shadow:0 0 12px #ff8c22,0 0 26px #ff8c2266;
+  box-shadow:inset 0 0 22px #ff9d2a20,0 0 20px #ff9d2a55;
+}
+@media (max-height:800px) {
+  .arcade-show .arcade-shell { padding:8px 14px; gap:8px; grid-template-rows:38px minmax(0,1fr) 145px 100px; }
+  .arcade-show-brand strong { font-size:29px; }
+  .arcade-show-brand div>span { font-size:7px; margin-top:3px; }
+  .arcade-show-brand p { font-size:14px; }
+  .arcade-show .arcade-marquee { height:62px; }
+  .arcade-show .arcade-machine__body { grid-template-rows:minmax(0,1fr) 82px; padding:8px 10px 5px; }
+  .arcade-show .arcade-result { grid-template-rows:32px minmax(0,1fr) 66px; }
+  .arcade-show .arcade-result>header { height:32px; }
+  .arcade-show .arcade-conveyor { top:65px; }
+  .arcade-show .arcade-machine__telemetry { padding:5px 8px; top:6px; }
+  .arcade-show .arcade-scanner { transform:translateX(-50%) scale(.7); transform-origin:top center; }
+}
+@media (max-width:900px) {
+  .arcade-show { overflow:auto; }
+  .arcade-show .arcade-shell { height:auto; min-height:100svh; grid-template-rows:46px 480px 170px 110px; }
+  .arcade-show .arcade-main-stage { grid-template-columns:minmax(0,1fr) 230px; gap:10px; }
+  .arcade-show .arcade-groups { overflow-x:auto; grid-template-columns:repeat(var(--arcade-group-count),minmax(140px,1fr)); }
+  .arcade-show .arcade-deck-actions>small { display:none; }
+  .arcade-show .arcade-console-mark b,.arcade-show .arcade-console-mark span { font-size:12px; }
+}
