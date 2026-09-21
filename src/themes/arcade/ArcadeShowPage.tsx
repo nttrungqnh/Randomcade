@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Maximize, RotateCcw, Undo2, X } from 'lucide-react'
+import { Maximize, RotateCcw, LogOut } from 'lucide-react'
 import { useShowSessionStore } from '../../stores/showSessionStore'
 import type { DrawResult } from '../../types/models'
 import { createArcadeDrawTimeline, type ArcadeVisualState } from './animations/createArcadeDrawTimeline'
@@ -10,7 +10,7 @@ import { ArcadeMachine } from './components/ArcadeMachine'
 import { ArcadeResultPanel } from './components/ArcadeResultPanel'
 import { DrawnTeamsStrip } from './components/DrawnTeamsStrip'
 import alarmSoundUrl from '../../assets/sounds/retro-game-alarm.mp3'
-import './styles/arcade.css'
+import { PixelBall, PixelCrown, PixelCity } from './components/ArcadePixelArt'
 import './styles/arcade-cabinet.css'
 
 export function ArcadeShowPage() {
@@ -26,7 +26,7 @@ export function ArcadeShowPage() {
   const alarmFadeRef = useRef<number | null>(null)
   const [visualState, setVisualState] = useState<ArcadeVisualState>('idle')
   const [result, setResult] = useState<DrawResult | null>(null)
-  const [showControls, setShowControls] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(true)
   const [confirmReset, setConfirmReset] = useState(false)
   const isAnimating = visualState !== 'idle' && visualState !== 'complete'
   const displayedResult = result ?? session?.drawHistory.at(-1) ?? null
@@ -44,16 +44,17 @@ export function ArcadeShowPage() {
     }))
   }, [isAnimating, result, session])
   const enterFullscreen = () => { void document.documentElement.requestFullscreen?.().catch(() => undefined) }
-  const handleUndo = () => { undo(); setResult(null) }
+  const handleUndo = useCallback(() => { undo(); setResult(null); setVisualState('idle') }, [undo])
 
   const startAlarm = useCallback(() => {
+    if (!soundEnabled) return
     if (alarmFadeRef.current !== null) window.cancelAnimationFrame(alarmFadeRef.current)
     const audio = alarmRef.current ?? new Audio(alarmSoundUrl)
     alarmRef.current = audio
     audio.loop = true
     audio.volume = 0.62
     if (audio.paused) void audio.play().catch(() => undefined)
-  }, [])
+  }, [soundEnabled])
 
   const fadeAlarm = useCallback(() => {
     const audio = alarmRef.current
@@ -100,9 +101,10 @@ export function ArcadeShowPage() {
     alarmRef.current?.pause()
   }, [])
   useEffect(() => {
+    if (!soundEnabled) { alarmRef.current?.pause(); return }
     if (['starting', 'shuffling', 'slowing', 'locked'].includes(visualState)) startAlarm()
     else fadeAlarm()
-  }, [fadeAlarm, startAlarm, visualState])
+  }, [fadeAlarm, startAlarm, visualState, soundEnabled])
   useEffect(() => {
     if (session || !import.meta.env.DEV || searchParams.get('demo') !== '1') return
     startSession(Array.from({ length: 9 }, (_, index) => ({ id: `arcade-demo-${index}`, name: `Team ${String(index + 1).padStart(2, '0')}`, participants: [{ id: `arcade-demo-${index}-a`, name: `Player ${index * 2 + 1}` }, { id: `arcade-demo-${index}-b`, name: `Player ${index * 2 + 2}` }] })), 3, 'arcade')
@@ -112,28 +114,40 @@ export function ArcadeShowPage() {
       const target = event.target as HTMLElement | null
       if (confirmReset || target?.matches('input, textarea, button, select')) return
       if (event.code === 'Space') { event.preventDefault(); handlePush() }
-      if (!isAnimating && event.key.toLowerCase() === 'u') undo()
+      if (!isAnimating && event.key.toLowerCase() === 'u') handleUndo()
       if (event.key.toLowerCase() === 'f') enterFullscreen()
     }
     window.addEventListener('keydown', keydown)
     return () => window.removeEventListener('keydown', keydown)
-  }, [confirmReset, handlePush, isAnimating, undo])
+  }, [confirmReset, handlePush, handleUndo, isAnimating])
 
   if (!session) return <main className="arcade-empty"><ArcadeBackground /><div><p>RandomShow</p><h1>No show<br />ready</h1><span>Create a show before entering the arcade.</span><Link to="/create">Create show</Link></div></main>
   const debug = import.meta.env.DEV && searchParams.get('debug') === '1'
-  return <main ref={rootRef} className={`arcade-show arcade-show--${visualState}`} onMouseMove={() => setShowControls(true)}>
+  return <main ref={rootRef} className={`arcade-show arcade-show--${visualState}`}>
     <ArcadeBackground />
     <div className="arcade-shell">
-      <header className="arcade-show-brand"><div><strong>Drawshow</strong><span>RANDOM MADE EPIC</span></div><p>Same Court<br />Bigger Friends <span>♛</span></p></header>
+      <header className="arcade-show-brand">
+        <div className="arcade-logo"><strong>Drawshow</strong><span>RANDOM MADE EPIC</span><PixelBall /></div>
+        <div className="arcade-marquee pixel-frame"><span aria-hidden="true">»</span><div><strong>{session.showConfig?.trim() || 'BỐC THĂM MAY MẮN'}</strong><small>PICKLEBALL TOURNAMENT DRAW</small></div><span aria-hidden="true">«</span></div>
+        <div className="arcade-header-right"><p>SAME COURT<br />BIGGER FRIENDS <PixelCrown /></p><div className="arcade-live pixel-frame"><b><i /> LIVE</b><span>{String(visibleHistory.length).padStart(2, '0')}/{String(session.teams.length).padStart(2, '0')}</span></div></div>
+      </header>
       <section className="arcade-main-stage">
-        <ArcadeMachine visualState={visualState} teams={remainingTeams} selectedTeam={selectedTeam} teamCount={remainingTeams.length} showConfig={session.showConfig} groups={session.groups} onPush={handlePush} onUndo={handleUndo} onReset={() => setConfirmReset(true)} disabled={isAnimating || session.status === 'completed'} historyDisabled={isAnimating || drawn === 0} />
+        <ArcadeMachine visualState={session.status === 'completed' && !isAnimating ? 'complete' : visualState} teams={remainingTeams} selectedTeam={selectedTeam} onPush={handlePush} onUndo={handleUndo} soundEnabled={soundEnabled} onToggleSound={() => setSoundEnabled((value) => !value)} disabled={isAnimating || session.status === 'completed'} historyDisabled={isAnimating || drawn === 0} />
         <ArcadeResultPanel visualState={visualState} team={selectedTeam} teamNumber={selectedTeamNumber} group={selectedGroup} complete={session.status === 'completed'} />
       </section>
       <ArcadeGroupBoard groups={visibleGroups} teams={session.teams} activeGroupId={isAnimating ? selectedGroup?.id : undefined} />
-      <DrawnTeamsStrip history={visibleHistory} teams={session.teams} />
+      <footer className="arcade-bottom pixel-frame">
+        <DrawnTeamsStrip history={visibleHistory} teams={session.teams} />
+        <PixelCity className="arcade-city" />
+        <p className="arcade-footer-motto">PICKLEBALL<br />MORE FRIENDS<br />A BRIGHTER TOMORROW</p>
+        <nav className="arcade-operator" aria-label="Điều khiển màn chơi">
+          <button className="pixel-frame" onClick={() => setConfirmReset(true)} disabled={isAnimating || drawn === 0} aria-label="Bốc thăm lại" title="Bốc thăm lại"><RotateCcw /></button>
+          <button className="pixel-frame" onClick={enterFullscreen} aria-label="Toàn màn hình" title="Toàn màn hình (F)"><Maximize /><span>TOÀN MÀN HÌNH</span></button>
+          <Link className="pixel-frame" to="/create" aria-label="Thoát màn chơi" title="Thoát màn chơi"><LogOut /><span>THOÁT</span></Link>
+        </nav>
+      </footer>
     </div>
-    <div className={`arcade-operator ${showControls ? 'arcade-operator--visible' : ''}`} onMouseLeave={() => setShowControls(false)}><button onClick={handleUndo} disabled={isAnimating || drawn === 0}><Undo2 size={15} /> Undo</button><button onClick={() => setConfirmReset(true)} disabled={isAnimating || drawn === 0}><RotateCcw size={15} /> Reset</button><button onClick={enterFullscreen}><Maximize size={15} /> Fullscreen</button><Link to="/create"><X size={15} /> Exit</Link></div>
-    {confirmReset && <div className="arcade-modal"><div><p>Reset draw?</p><span>All draw results will be cleared. Teams and group setup will stay.</span><footer><button onClick={() => setConfirmReset(false)}>Cancel</button><button onClick={() => { timelineRef.current?.kill(); reset(); setResult(null); setVisualState('idle'); setConfirmReset(false) }}>Reset</button></footer></div></div>}
+    {confirmReset && <div className="arcade-modal"><div><p>Bốc thăm lại?</p><span>Kết quả bốc thăm sẽ bị xóa. Danh sách đội và thiết lập bảng vẫn được giữ.</span><footer><button onClick={() => setConfirmReset(false)}>Hủy</button><button onClick={() => { timelineRef.current?.kill(); reset(); setResult(null); setVisualState('idle'); setConfirmReset(false) }}>Làm lại</button></footer></div></div>}
     {debug && <aside className="arcade-debug">{visualState} · {result?.teamId ?? '—'} · {result?.groupId ?? '—'}</aside>}
   </main>
 }

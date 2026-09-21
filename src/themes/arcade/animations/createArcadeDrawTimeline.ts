@@ -28,9 +28,6 @@ export function createArcadeDrawTimeline({ root, groupId, reducedMotion, onState
   timeline.call(() => onState('locked')).to(scanner, { y: 16, duration: 0.18, ease: 'power2.in' }).to(selectedCard, { scale: 1.2, filter: 'brightness(1.8)', duration: 0.14 }).to(scanner, { y: 0, duration: 0.22, ease: 'power2.out' }).to(selectedCard, { filter: 'brightness(1)', duration: 0.16 }, '<')
   timeline.call(() => onState('revealing')).to(reveal, { autoAlpha: 1, scale: 1, duration: 0.48 * duration, ease: 'back.out(1.5)' })
   timeline.call(() => onState('groupScanning')).to(groups, { boxShadow: '0 0 22px rgba(96,239,255,.48)', duration: 0.1 * duration, stagger: 0.07 * duration, yoyo: true, repeat: reducedMotion ? 0 : 1 }).to(target, { boxShadow: '0 0 30px rgba(255,173,67,.72)', duration: 0.22 * duration, repeat: reducedMotion ? 0 : 2, yoyo: true })
-  timeline.call(() => onState('dealing')).to(reveal, { scale: 1.04, duration: 0.18 * duration, ease: 'power2.out' }).to(reveal, { scale: 1, duration: 0.22 * duration, ease: 'power2.inOut' }).call(() => {
-    const newest = root.querySelector<HTMLElement>('[data-history-card]:last-child')
-    if (newest) gsap.fromTo(newest, { autoAlpha: 0, x: 25, scale: .8 }, { autoAlpha: 1, x: 0, scale: 1, duration: .32 })
-  })
+  timeline.call(() => onState('dealing')).to(reveal, { scale: 1.04, duration: 0.18 * duration, ease: 'power2.out' }).to(reveal, { scale: 1, duration: 0.22 * duration, ease: 'power2.inOut' })
   return timeline
 }

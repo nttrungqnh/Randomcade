@@ -7,7 +7,15 @@ function MiniParticipant({ participant }: { participant: Team['participants'][nu
   return <figure>{imageUrl ? <img src={imageUrl} alt={participant.name} /> : <span>{initials}</span>}</figure>
 }
 
-function MiniTeam({ team }: { team: Team }) {
-  return <div className="arcade-history__team" data-history-card><div className="arcade-history__people">{team.participants.slice(0, 2).map((participant) => <MiniParticipant key={participant.id} participant={participant} />)}</div></div>
+export function DrawnTeamsStrip({ history, teams }: { history: DrawResult[]; teams: Team[] }) {
+  return <section className="arcade-history" aria-label="Lịch sử bốc thăm">
+    <header>ĐÃ BỐC <b>{String(history.length).padStart(2, '0')}/{String(teams.length).padStart(2, '0')}</b></header>
+    <div className="arcade-history__rail">
+      {teams.map((_, index) => {
+        const draw = history[index]
+        const team = draw ? teams.find((item) => item.id === draw.teamId) : undefined
+        return team ? <div key={draw.id} className="arcade-history__team" title={team.participants.map((p) => p.name).join(' × ')} data-history-card><div className="arcade-history__people">{team.participants.slice(0, 2).map((participant) => <MiniParticipant key={participant.id} participant={participant} />)}</div></div> : <span className="arcade-history__pending" key={`pending-${index}`} aria-label={`Lượt ${index + 1}: chưa bốc`} />
+      })}
+    </div>
+  </section>
 }
-export function DrawnTeamsStrip({ history, teams }: { history: DrawResult[]; teams: Team[] }) { return <div className="arcade-bottom"><section className="arcade-history"><header><span>ĐÃ BỐC <b>({history.length}/{teams.length})</b></span><i /></header><div className="arcade-history__rail">{history.length ? history.map((draw) => { const team = teams.find((item) => item.id === draw.teamId); return team ? <MiniTeam key={draw.id} team={team} /> : null }) : <div className="arcade-history__empty">CHƯA CÓ KẾT QUẢ — PUSH TO START THE SHOW</div>}</div></section></div> }
