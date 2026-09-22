@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie'
+import type { TeamDrawContent } from '../types/models'
 
 export interface ParticipantImageRecord {
   id: string
@@ -10,11 +11,16 @@ export interface ParticipantImageRecord {
 
 class RandomShowDatabase extends Dexie {
   participantImages!: EntityTable<ParticipantImageRecord, 'id'>
+  teamDrawContents!: EntityTable<TeamDrawContent, 'id'>
 
   constructor() {
     super('RandomShowDB')
     this.version(1).stores({
       participantImages: 'id, participantId, updatedAt',
+    })
+    this.version(2).stores({
+      participantImages: 'id, participantId, updatedAt',
+      teamDrawContents: 'id, status, updatedAt, createdAt',
     })
   }
 }

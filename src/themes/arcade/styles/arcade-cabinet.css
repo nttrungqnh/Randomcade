@@ -65,8 +65,8 @@
 .arcade-show .arcade-machine__screen { position: relative; display: block; height: auto; min-height: 0; min-width: 0; margin: 0; border: 0; border-radius: 0; overflow: hidden; background: none; box-shadow: none; text-transform: none; }
 .arcade-show .arcade-machine__screen:before { display: none; }
 .arcade-conveyor { position: absolute; inset: 0; overflow: hidden; }
-.arcade-conveyor__cards { position: absolute; inset: 9px 0 16px; display: flex; align-items: stretch; gap: 12px; will-change: transform; }
-.arcade-conveyor__card { position: relative; flex: 0 0 calc((100% - 60px) / 6); min-width: 0; }
+.arcade-conveyor__cards { position: absolute; inset: 20px 0 30px; display: flex; align-items: stretch; gap: 18px; will-change: transform; }
+.arcade-conveyor__card { position: relative; flex: 0 0 calc((100% - 84px) / 7); min-width: 0; }
 .arcade-conveyor__rail,.arcade-conveyor__selector { display: none; }
 .arcade-show .arcade-card:not(.arcade-card--compact) { --edge: #d743f9; --surface: #090c27; display: flex; flex-direction: column; height: 100%; min-height: 0; padding: 8px 7px 6px; }
 .arcade-card__portraits { display: flex; flex: 1; min-height: 0; gap: 3px; }
@@ -82,6 +82,10 @@
 .arcade-show .arcade-control-deck { --edge: #1c92db; --surface: radial-gradient(ellipse at 85% 50%,#62235855,transparent 50%),#081229; display: grid; grid-template-columns: 155px minmax(0,1fr) minmax(220px,33%); align-items: center; gap: 18px; padding: 12px 16px; }
 .arcade-deck-actions { display: flex; gap: 18px; align-items: center; }
 .arcade-control { display: grid; gap: 5px; justify-items: center; }
+.arcade-control--sound { align-content: center; }
+.arcade-sound-picker { width: 126px; min-height: 23px; padding: 3px 20px 3px 7px; border: 2px solid #40eaff; border-radius: 0; outline: 0; color: #a7f5ff; background: #071a35; font: 8px var(--pixel); letter-spacing: .04em; }
+.arcade-sound-picker:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.arcade-sound-picker:disabled { opacity: .48; }
 .arcade-control>span { font: 8px/1.25 var(--pixel); letter-spacing: .1em; color: #8accf2; text-align: center; }
 .arcade-show .arcade-mini-button { --edge: #40eaff; --surface: #063352; display: grid; width: 54px; height: 54px; place-items: center; color: #52ecff; }
 .arcade-mini-button svg { width: 32px; height: 32px; filter: drop-shadow(0 0 5px currentColor); }
@@ -116,6 +120,11 @@
 .arcade-result__waiting>b { display: grid; width: 96px; height: 114px; place-items: center; color: #ffe268; border: 3px solid #c99e41; background: #271c39; font: 65px var(--pixel); box-shadow: 0 0 22px #f6c34a22; }
 .arcade-result__waiting strong { font: 20px var(--pixel); color: #ffe6a5; }
 .arcade-result__waiting span { font: 11px 'Segoe UI',sans-serif; color: #c3b6ce; }
+.arcade-result__waiting.is-selecting { border-color: #46e8ff; background: radial-gradient(ellipse at center,#123e695c,transparent 68%), radial-gradient(ellipse,#37275266,transparent); }
+.arcade-result__waiting.is-selecting>b { width: 136px; height: 136px; border: 4px dashed #46e8ff; border-radius: 50%; color: #fff19c; background: radial-gradient(circle,#2b2055,#10152f 67%); font-size: 82px; animation: arcade-question-spin .85s steps(8,end) infinite; box-shadow: 0 0 26px #32dfff66, inset 0 0 24px #3a81d955; }
+.arcade-result__waiting.is-selecting strong { color: #50ecff; text-shadow: 0 0 11px #2bddff99; }
+.arcade-result__waiting.is-selecting span { color: #b8eaff; font-family: var(--pixel); letter-spacing: .1em; }
+@keyframes arcade-question-spin { to { transform: rotate(360deg); } }
 .arcade-result__complete { color: var(--gold); font: 10px var(--pixel); text-align: center; }
 .arcade-groups { display: grid; grid-template-columns: repeat(var(--arcade-group-count),minmax(180px,1fr)); min-height: 0; min-width: 0; gap: 14px; overflow-x: auto; }
 .arcade-show .arcade-group { --group-accent: #ff548f; --edge: var(--group-accent); --surface: radial-gradient(ellipse at 30% 0%,color-mix(in srgb,var(--edge) 12%,transparent),transparent 70%),#0a1027; display: grid; min-width: 0; min-height: 0; grid-template-rows: 40px minmax(0,1fr); padding: 5px 10px 10px; }
@@ -152,6 +161,7 @@
 .arcade-operator { display: flex; gap: 8px; align-items: center; margin-left: auto; flex: none; }
 .arcade-show .arcade-operator :is(button,a) { --edge: #409ad8; --surface: #07172f; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; min-height: 44px; color: #e2f2ff; text-decoration: none; font: 10px var(--pixel); }
 .arcade-operator svg { width: 20px; height: 20px; }
+.arcade-operator .arcade-sound-picker { width: 132px; min-height: 44px; padding-inline: 10px 26px; border-color: #ffe36d; color: #ffe99a; background: #241d3d; }
 .arcade-operator :is(button,a):hover { filter: brightness(1.3); }
 .arcade-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: #050416dc; backdrop-filter: blur(7px); }
 .arcade-modal>div { max-width: 420px; padding: 28px; border: 2px solid #bf46f6; background: #12102c; box-shadow: 0 0 40px #a02fec44; }

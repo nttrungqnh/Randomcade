@@ -15,12 +15,13 @@ export function ArcadeResultPanel({ visualState, team, teamNumber, group, comple
   const revealTeam = team && ['idle', 'revealing', 'groupScanning', 'dealing', 'complete'].includes(visualState)
   const revealGroup = group && ['idle', 'dealing', 'complete'].includes(visualState)
   const finished = complete && visualState === 'complete'
+  const isSelecting = ['starting', 'shuffling', 'slowing', 'locked'].includes(visualState)
 
   return (
     <aside className="arcade-result" aria-label="Đội vừa được chọn">
       <header className="arcade-result__title">
         <PixelCrown />
-        <span>ĐỘI VỪA ĐƯỢC CHỌN</span>
+        <span>{isSelecting ? 'ĐANG LỰA CHỌN...' : 'ĐỘI VỪA ĐƯỢC CHỌN'}</span>
         <PixelCrown />
       </header>
       <div
@@ -29,10 +30,10 @@ export function ArcadeResultPanel({ visualState, team, teamNumber, group, comple
         aria-label={revealTeam && teamNumber ? `Đội số ${teamNumber}` : undefined}
       >
         {revealTeam ? <ArcadeTeamCard team={team} /> : (
-          <div className="arcade-result__waiting">
+          <div className={`arcade-result__waiting ${isSelecting ? 'is-selecting' : ''}`}>
             <b>?</b>
-            <strong>AI SẼ ĐƯỢC CHỌN?</strong>
-            <span>{visualState === 'idle' ? 'Bấm BỐC THĂM để bắt đầu' : 'Hồi hộp chờ đón đội tiếp theo...'}</span>
+            <strong>{isSelecting ? 'ĐANG LỰA CHỌN...' : 'AI SẼ ĐƯỢC CHỌN?'}</strong>
+            <span>{visualState === 'idle' ? 'Bấm BỐC THĂM để bắt đầu' : isSelecting ? 'BĂNG CHUYỀN ĐANG QUAY...' : 'Hồi hộp chờ đón đội tiếp theo...'}</span>
           </div>
         )}
       </div>

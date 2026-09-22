@@ -33,7 +33,7 @@ export function HomePage() {
             <span className="landing-game-action">Tạo vòng quay <ArrowRight size={17} /></span>
             </div>
           </Link>
-          <Link className="landing-game landing-game--teams" to="/create?theme=arcade&screen=team-draw">
+          <Link className="landing-game landing-game--teams" to="/team-draw">
             <div className="landing-preview landing-preview--teams" aria-hidden="true"><span className="preview-caption">Sẵn sàng cho những trận đấu hay</span><div className="preview-groups">{['A','B','C'].map((group,index)=><div key={group}><b>Bảng {group}</b>{[0,1].map(row=><span key={row}><i>{['AN','MH','TN','HL','BN','KH'][index*2+row]}</i><i>{['LB','QA','PT','DK','VL','NT'][index*2+row]}</i><em /></span>)}</div>)}</div><span className="preview-chip">Chia bảng ngẫu nhiên, thật dễ dàng</span></div>
             <div className="landing-game-body">
             <span className="landing-game-icon"><Users size={29} /></span>

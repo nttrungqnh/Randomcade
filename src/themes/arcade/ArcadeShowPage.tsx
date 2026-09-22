@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { Maximize, RotateCcw, LogOut } from 'lucide-react'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Maximize, RotateCcw, LogOut, Volume2, VolumeX } from 'lucide-react'
 import { useShowSessionStore } from '../../stores/showSessionStore'
-import type { DrawResult } from '../../types/models'
+import { useTeamDrawContentStore } from '../../stores/teamDrawContentStore'
+import type { DrawResult, Team } from '../../types/models'
 import { createArcadeDrawTimeline, type ArcadeVisualState } from './animations/createArcadeDrawTimeline'
 import { ArcadeBackground } from './components/ArcadeBackground'
 import { ArcadeGroupBoard } from './components/ArcadeGroupBoard'
@@ -10,15 +11,20 @@ import { ArcadeMachine } from './components/ArcadeMachine'
 import { ArcadeResultPanel } from './components/ArcadeResultPanel'
 import { DrawnTeamsStrip } from './components/DrawnTeamsStrip'
 import alarmSoundUrl from '../../assets/sounds/retro-game-alarm.mp3'
+import lotterySoundUrl from '../../assets/sounds/nhac-xo-so.mp3'
 import { PixelBall } from './components/ArcadePixelArt'
 import './styles/arcade-cabinet.css'
 
 export function ArcadeShowPage() {
   const [searchParams] = useSearchParams()
-  const session = useShowSessionStore((state) => state.session)
-  const drawNext = useShowSessionStore((state) => state.drawNext)
-  const undo = useShowSessionStore((state) => state.undoLastDraw)
-  const reset = useShowSessionStore((state) => state.resetDraw)
+  const { id: drawId } = useParams()
+  const teamDrawStore = useTeamDrawContentStore()
+  const content = drawId ? teamDrawStore.contents.find((item) => item.id === drawId) : undefined
+  const legacySession = useShowSessionStore((state) => state.session)
+  const session = content ? { id: content.id, startedAt: content.createdAt, screenConfig: content.settings.screenConfig || content.name, hostName: content.settings.hostName, teams: content.teams, groups: content.groups, drawHistory: content.drawHistory, status: content.status === 'completed' ? 'completed' as const : 'running' as const, groupMode: 'balanced' as const, selectedTheme: content.templateId } : legacySession
+  const drawNext = () => drawId ? teamDrawStore.drawNext(drawId) : useShowSessionStore.getState().drawNext()
+  const undo = () => drawId ? teamDrawStore.undoLastDraw(drawId) : useShowSessionStore.getState().undoLastDraw()
+  const reset = () => { if (drawId) teamDrawStore.resetDraw(drawId); else useShowSessionStore.getState().resetDraw() }
   const startSession = useShowSessionStore((state) => state.startSession)
   const rootRef = useRef<HTMLElement>(null)
   const timelineRef = useRef<ReturnType<typeof createArcadeDrawTimeline> | null>(null)
@@ -26,8 +32,11 @@ export function ArcadeShowPage() {
   const alarmFadeRef = useRef<number | null>(null)
   const [visualState, setVisualState] = useState<ArcadeVisualState>('idle')
   const [result, setResult] = useState<DrawResult | null>(null)
+  const [conveyorPool, setConveyorPool] = useState<Team[]>([])
   const [soundEnabled, setSoundEnabled] = useState(true)
+  const [selectedSound, setSelectedSound] = useState<'retro' | 'lottery'>('retro')
   const [confirmReset, setConfirmReset] = useState(false)
+  useEffect(() => { if (drawId) void teamDrawStore.hydrate() }, [drawId])
   const isAnimating = visualState !== 'idle' && visualState !== 'complete'
   const displayedResult = result ?? session?.drawHistory.at(-1) ?? null
   const selectedTeam = displayedResult ? session?.teams.find((team) => team.id === displayedResult.teamId) : undefined
@@ -46,15 +55,17 @@ export function ArcadeShowPage() {
   const enterFullscreen = () => { void document.documentElement.requestFullscreen?.().catch(() => undefined) }
   const handleUndo = useCallback(() => { undo(); setResult(null); setVisualState('idle') }, [undo])
 
+  const selectedSoundUrl = selectedSound === 'lottery' ? lotterySoundUrl : alarmSoundUrl
+
   const startAlarm = useCallback(() => {
     if (!soundEnabled) return
     if (alarmFadeRef.current !== null) window.cancelAnimationFrame(alarmFadeRef.current)
-    const audio = alarmRef.current ?? new Audio(alarmSoundUrl)
+    const audio = alarmRef.current ?? new Audio(selectedSoundUrl)
     alarmRef.current = audio
     audio.loop = true
     audio.volume = 0.62
     if (audio.paused) void audio.play().catch(() => undefined)
-  }, [soundEnabled])
+  }, [selectedSoundUrl, soundEnabled])
 
   const fadeAlarm = useCallback(() => {
     const audio = alarmRef.current
@@ -77,9 +88,11 @@ export function ArcadeShowPage() {
   }, [])
 
   const handlePush = useCallback(() => {
-    const current = useShowSessionStore.getState().session
+    const current = session
     if (!current || timelineRef.current?.isActive() || current.status === 'completed') return
     startAlarm()
+    const poolBeforeDraw = current.teams.filter((team) => !current.drawHistory.some((draw) => draw.teamId === team.id))
+    setConveyorPool(poolBeforeDraw)
     setVisualState('starting')
     const next = drawNext()
     if (!next || !rootRef.current) {
@@ -91,9 +104,17 @@ export function ArcadeShowPage() {
     requestAnimationFrame(() => {
       if (!rootRef.current) return
       timelineRef.current?.kill()
-      timelineRef.current = createArcadeDrawTimeline({ root: rootRef.current, groupId: next.groupId, reducedMotion, onState: setVisualState, onFinish: () => setVisualState(useShowSessionStore.getState().session?.status === 'completed' ? 'complete' : 'idle') })
+      timelineRef.current = createArcadeDrawTimeline({ root: rootRef.current, groupId: next.groupId, reducedMotion, onState: setVisualState, onFinish: () => { setConveyorPool([]); setVisualState(useShowSessionStore.getState().session?.status === 'completed' ? 'complete' : 'idle') } })
     })
-  }, [drawNext, startAlarm])
+  }, [drawNext, session, startAlarm])
+
+  useEffect(() => {
+    const audio = alarmRef.current
+    if (!audio) return
+    audio.pause()
+    audio.currentTime = 0
+    alarmRef.current = null
+  }, [selectedSoundUrl])
 
   useEffect(() => () => {
     timelineRef.current?.kill()
@@ -121,6 +142,7 @@ export function ArcadeShowPage() {
     return () => window.removeEventListener('keydown', keydown)
   }, [confirmReset, handlePush, handleUndo, isAnimating])
 
+  if (drawId && !teamDrawStore.hydrated) return <main className="arcade-empty">Đang tải nội dung bốc thăm…</main>
   if (!session) return <main className="arcade-empty"><ArcadeBackground /><div><p>RandomShow</p><h1>No show<br />ready</h1><span>Create a show before entering the arcade.</span><Link to="/create">Create show</Link></div></main>
   const debug = import.meta.env.DEV && searchParams.get('debug') === '1'
   return <main ref={rootRef} className={`arcade-show arcade-show--${visualState}`}>
@@ -132,7 +154,7 @@ export function ArcadeShowPage() {
         <div className="arcade-header-right"><div className="arcade-live pixel-frame"><b><i /> LIVE</b><span>{String(visibleHistory.length).padStart(2, '0')}/{String(session.teams.length).padStart(2, '0')}</span></div></div>
       </header>
       <section className="arcade-main-stage">
-        <ArcadeMachine visualState={session.status === 'completed' && !isAnimating ? 'complete' : visualState} teams={remainingTeams} selectedTeam={selectedTeam} onPush={handlePush} onUndo={handleUndo} soundEnabled={soundEnabled} onToggleSound={() => setSoundEnabled((value) => !value)} disabled={isAnimating || session.status === 'completed'} historyDisabled={isAnimating || drawn === 0} />
+        <ArcadeMachine visualState={session.status === 'completed' && !isAnimating ? 'complete' : visualState} teams={isAnimating && conveyorPool.length > 0 ? conveyorPool : remainingTeams} selectedTeam={selectedTeam} onPush={handlePush} onUndo={handleUndo} soundEnabled={soundEnabled} disabled={isAnimating || session.status === 'completed'} historyDisabled={isAnimating || drawn === 0} />
         <ArcadeResultPanel visualState={visualState} team={selectedTeam} teamNumber={selectedTeamNumber} group={selectedGroup} complete={session.status === 'completed'} />
       </section>
       <ArcadeGroupBoard groups={visibleGroups} teams={session.teams} activeGroupId={isAnimating ? selectedGroup?.id : undefined} />
@@ -140,8 +162,10 @@ export function ArcadeShowPage() {
         <DrawnTeamsStrip history={visibleHistory} teams={session.teams} />
         <nav className="arcade-operator" aria-label="Điều khiển màn chơi">
           <button className="pixel-frame" onClick={() => setConfirmReset(true)} disabled={isAnimating || drawn === 0} aria-label="Bốc thăm lại" title="Bốc thăm lại"><RotateCcw /></button>
+          <button className="pixel-frame arcade-operator__sound" onClick={() => setSoundEnabled((value) => !value)} aria-label={soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh'} aria-pressed={soundEnabled} title={soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh'}>{soundEnabled ? <Volume2 /> : <VolumeX />}</button>
+          <select className="arcade-sound-picker" value={selectedSound} onChange={(event) => setSelectedSound(event.target.value as 'retro' | 'lottery')} disabled={isAnimating} aria-label="Chọn nhạc quay"><option value="retro">RETRO GAME</option><option value="lottery">NHẠC XỔ SỐ</option></select>
           <button className="pixel-frame" onClick={enterFullscreen} aria-label="Toàn màn hình" title="Toàn màn hình (F)"><Maximize /><span>TOÀN MÀN HÌNH</span></button>
-          <Link className="pixel-frame" to="/create" aria-label="Thoát màn chơi" title="Thoát màn chơi"><LogOut /><span>THOÁT</span></Link>
+          <Link className="pixel-frame" to={drawId ? "/team-draw" : "/create"} aria-label="Thoát màn chơi" title="Thoát màn chơi"><LogOut /><span>{drawId ? "DANH SÁCH" : "THOÁT"}</span></Link>
         </nav>
       </footer>
     </div>

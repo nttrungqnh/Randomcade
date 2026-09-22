@@ -19,3 +19,6 @@ dist/
 
 # TypeScript cache
 *.tsbuildinfo
+
+# Local visual test captures
+/artifacts/

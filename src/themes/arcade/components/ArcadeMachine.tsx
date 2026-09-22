@@ -1,4 +1,4 @@
-import { Volume2, VolumeX, Undo2 } from 'lucide-react'
+import { Undo2 } from 'lucide-react'
 import pushSoundUrl from '../../../assets/sounds/push.mp3'
 import type { Team } from '../../../types/models'
 import { CardConveyor } from './CardConveyor'
@@ -16,13 +16,12 @@ interface ArcadeMachineProps {
   selectedTeam?: Team
   onPush: () => void
   onUndo: () => void
-  onToggleSound: () => void
   soundEnabled: boolean
   disabled: boolean
   historyDisabled: boolean
 }
 
-export function ArcadeMachine({ visualState, teams, selectedTeam, onPush, onUndo, onToggleSound, soundEnabled, disabled, historyDisabled }: ArcadeMachineProps) {
+export function ArcadeMachine({ visualState, teams, selectedTeam, onPush, onUndo, soundEnabled, disabled, historyDisabled }: ArcadeMachineProps) {
   const isDrawing = !['idle', 'complete'].includes(visualState)
   const push = () => {
     if (disabled) return
@@ -40,12 +39,12 @@ export function ArcadeMachine({ visualState, teams, selectedTeam, onPush, onUndo
       <div className="arcade-community" aria-hidden="true"><PixelBall /><small>PICKLEBALL<br />COMMUNITY</small></div>
     </header>
     <div className="arcade-machine__screen">
-      {visualState === 'complete' ? <div className="arcade-finish"><PixelCrown /><strong>HOÀN TẤT BỐC THĂM!</strong><span>CÁC ĐỘI ĐÃ SẴN SÀNG · HẸN GẶP TRÊN SÂN</span></div> : <CardConveyor key={isDrawing ? selectedTeam?.id ?? 'idle' : 'idle'} teams={teams} selectedTeam={isDrawing ? selectedTeam : undefined} />}
+      {visualState === 'complete' ? <div className="arcade-finish"><PixelCrown /><strong>HOÀN TẤT BỐC THĂM!</strong><span>CÁC ĐỘI ĐÃ SẴN SÀNG · HẸN GẶP TRÊN SÂN</span></div> : <CardConveyor teams={teams} selectedTeam={isDrawing ? selectedTeam : undefined} />}
       <div className="arcade-scanner" data-arcade-scanner aria-hidden="true" />
     </div>
     <div className="arcade-control-deck pixel-frame">
       <div className="arcade-deck-actions">
-        <div className="arcade-control"><button className="arcade-mini-button arcade-mini-button--sound pixel-frame" onClick={onToggleSound} aria-label={soundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh'} aria-pressed={soundEnabled}>{soundEnabled ? <Volume2 /> : <VolumeX />}</button><span>ÂM THANH<br />{soundEnabled ? 'ĐANG BẬT' : 'ĐANG TẮT'}</span></div>
+        
         <div className="arcade-control"><button className="arcade-mini-button arcade-mini-button--undo pixel-frame" onClick={onUndo} disabled={historyDisabled} aria-label="Hoàn tác lượt bốc" title="Hoàn tác (U)"><Undo2 /></button><span>HOÀN TÁC<br />LỰA CHỌN</span></div>
       </div>
       <div className="arcade-console-mark pixel-frame" role="status"><span aria-hidden="true">»</span><div><b>{statusByState[visualState]}</b><small>{disabled ? (visualState === 'complete' ? 'CHÚC CÁC ĐỘI THI ĐẤU THẬT TỐT!' : 'MAY MẮN SẼ GỌI TÊN AI?') : 'NHẤN SPACE ĐỂ BẮT ĐẦU'}</small></div><span aria-hidden="true">«</span></div>

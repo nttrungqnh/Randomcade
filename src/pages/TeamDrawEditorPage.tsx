@@ -1,0 +1,30 @@
+import { useEffect, useMemo, useState } from 'react'
+import { ArrowLeft, Save } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { PeopleStep } from '../components/create/PeopleStep'
+import { useTeamDrawContentStore } from '../stores/teamDrawContentStore'
+import type { ExperienceTheme, Participant, Team, TeamDrawContentInput } from '../types/models'
+import { calculateGroupCapacities, getGroupName } from '../utils/groupSetup'
+import '../create.css'
+import '../team-draw.css'
+
+const makeParticipant = (): Participant => ({ id: crypto.randomUUID(), name: '' })
+const makeTeam = (): Team => ({ id: crypto.randomUUID(), participants: [makeParticipant(), makeParticipant()] })
+const blank = (): TeamDrawContentInput => ({ name: '', teams: [], groupCount: 2, templateId: 'arcade', settings: { hostName: '', screenConfig: '' } })
+
+export function TeamDrawEditorPage() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const store = useTeamDrawContentStore()
+  const [draft, setDraft] = useState<TeamDrawContentInput>(blank)
+  const [loaded, setLoaded] = useState(!id)
+  useEffect(() => { void store.hydrate().then(() => { const item = id ? useTeamDrawContentStore.getState().getContent(id) : undefined; if (item) setDraft({ name: item.name, teams: item.teams, groupCount: item.groupCount, templateId: item.templateId, settings: item.settings }); setLoaded(true) }) }, [id, store])
+  const updateTeams = (fn: (teams: Team[]) => Team[]) => setDraft((value) => ({ ...value, teams: fn(value.teams) }))
+  const valid = draft.name.trim() && draft.teams.length >= 2 && draft.groupCount >= 2 && draft.groupCount <= draft.teams.length && draft.teams.every((team) => team.participants.every((person) => person.name.trim()))
+  const capacities = useMemo(() => draft.groupCount >= 2 && draft.groupCount <= draft.teams.length ? calculateGroupCapacities(draft.teams.length, draft.groupCount) : [], [draft.groupCount, draft.teams.length])
+  const save = async () => { if (!valid) return; if (id) await store.updateContent(id, draft); else await store.createContent(draft); navigate('/team-draw') }
+  if (!loaded) return <main className="team-draw-page">Đang tải nội dung…</main>
+  return <main className="config-page"><header className="config-header"><div className="config-container config-header-inner"><Link className="config-brand" to="/team-draw">RANDOMCADE</Link><div className="config-save">Lưu riêng từng nội dung</div></div></header><div className="config-container config-page-content"><Link className="config-back" to="/team-draw"><ArrowLeft size={16} /> Danh sách nội dung</Link><div className="config-page-heading"><div><h1>{id ? 'Sửa nội dung bốc thăm' : 'Tạo nội dung bốc thăm'}</h1><p>Mỗi nội dung có danh sách đội, ảnh và kết quả riêng.</p></div></div>
+    <div className="config-layout"><div className="config-content"><section className="config-panel"><div className="config-fields"><label className="config-field"><span>Tên nội dung</span><input value={draft.name} placeholder="Ví dụ: Đôi hỗn hợp 4.6" onChange={(event) => setDraft((value) => ({ ...value, name: event.target.value }))} /></label><label className="config-field"><span>Người tổ chức</span><input value={draft.settings.hostName} onChange={(event) => setDraft((value) => ({ ...value, settings: { ...value.settings, hostName: event.target.value } }))} /></label></div></section><PeopleStep teams={draft.teams} onAddTeam={() => updateTeams((teams) => [...teams, makeTeam()])} onAddTeams={(pairs) => updateTeams((teams) => [...teams, ...pairs.map(([a,b]) => ({ id: crypto.randomUUID(), participants: [{ id: crypto.randomUUID(), name: a }, { id: crypto.randomUUID(), name: b }] }))])} onLoadDemo={() => undefined} onBusyChange={() => undefined} onRemoveTeam={(teamId) => updateTeams((teams) => teams.filter((team) => team.id !== teamId))} onUpdateTeam={(teamId, updates) => updateTeams((teams) => teams.map((team) => team.id === teamId ? { ...team, ...updates } : team))} onUpdateParticipant={(teamId, participantId, updates) => updateTeams((teams) => teams.map((team) => team.id === teamId ? { ...team, participants: team.participants.map((person) => person.id === participantId ? { ...person, ...updates } : person) } : team))} /></div>
+      <aside className="config-sidebar"><section className="config-panel"><label className="config-field"><span>Số bảng</span><input type="number" min={2} max={Math.max(2,draft.teams.length)} value={draft.groupCount} onChange={(event) => setDraft((value) => ({ ...value, groupCount: Number(event.target.value) }))} /></label>{capacities.map((capacity,index) => <p key={index}>Bảng {getGroupName(index)} · {capacity} đội</p>)}</section><section className="config-panel"><label className="config-field"><span>Template</span><select value={draft.templateId} onChange={(event) => setDraft((value) => ({ ...value, templateId: event.target.value as ExperienceTheme }))}><option value="arcade">Pixel Arcade</option></select></label><button className="config-button config-button--primary config-start" disabled={!valid} onClick={() => void save()}><Save size={17} /> Lưu nội dung</button></section></aside></div></div></main>
+}

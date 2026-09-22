@@ -55,3 +55,34 @@ export interface ShowSession {
   groupMode: GroupAllocationMode
   selectedTheme: ExperienceTheme | null
 }
+
+export type TeamDrawContentStatus = 'draft' | 'ready' | 'drawing' | 'completed'
+
+export interface TeamDrawSettings {
+  screenConfig: string
+  hostName: string
+}
+
+export interface TeamDrawContent {
+  id: string
+  name: string
+  teams: Team[]
+  groupCount: number
+  teamsPerGroup?: number
+  templateId: ExperienceTheme
+  settings: TeamDrawSettings
+  status: TeamDrawContentStatus
+  groups: Group[]
+  drawHistory: DrawResult[]
+  createdAt: number
+  updatedAt: number
+  completedAt?: number
+}
+
+export interface TeamDrawContentInput {
+  name: string
+  teams: Team[]
+  groupCount: number
+  templateId: ExperienceTheme
+  settings: TeamDrawSettings
+}
