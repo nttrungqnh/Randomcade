@@ -3,6 +3,10 @@ import type { ExperienceTheme } from '../../types/models'
 interface ExperienceStepProps {
   selectedTheme: ExperienceTheme | null
   onSelect: (theme: ExperienceTheme) => void
+  themeConfig: string
+  onConfigChange: (value: string) => void
+  screenName?: string
+  lockedTheme?: boolean
 }
 
 const experiences = [
@@ -27,17 +31,17 @@ function ExperienceVisual({ theme }: { theme: ExperienceTheme }) {
   return <div className="builder-lottery" aria-hidden="true"><span>7</span><span>12</span><span>24</span></div>
 }
 
-export function ExperienceStep({ selectedTheme, onSelect }: ExperienceStepProps) {
+export function ExperienceStep({ selectedTheme, onSelect, themeConfig, onConfigChange, screenName, lockedTheme }: ExperienceStepProps) {
   return (
     <section className="wizard-step experience-step" aria-labelledby="experience-title">
       <header className="wizard-step__heading">
         <p>04 / Experience</p>
-        <h1 id="experience-title">Choose your<br />experience</h1>
-        <span>Same random. Different show.</span>
+        <h1 id="experience-title">{screenName ? `Tùy chỉnh ${screenName}` : <>Choose your<br />experience</>}</h1>
+        <span>{screenName ? 'Màn chơi này có cấu hình riêng, không ảnh hưởng các trò khác.' : 'Mỗi màn chơi có cấu hình riêng.'}</span>
       </header>
 
       <div className="builder-experiences">
-        {experiences.map((experience) => {
+        {experiences.filter((experience) => !lockedTheme || experience.id === selectedTheme).map((experience) => {
           const available = experience.id === 'arcade' || experience.id === 'wheel'
           const selected = selectedTheme === experience.id
           return (
@@ -45,7 +49,7 @@ export function ExperienceStep({ selectedTheme, onSelect }: ExperienceStepProps)
               key={experience.id}
               className={`builder-experience builder-experience--${experience.id}`}
               type="button"
-              disabled={!available}
+              disabled={!available || lockedTheme}
               data-selected={selected}
               onClick={() => available && onSelect(experience.id)}
               aria-pressed={selected}
@@ -61,6 +65,19 @@ export function ExperienceStep({ selectedTheme, onSelect }: ExperienceStepProps)
           )
         })}
       </div>
+      {selectedTheme && (
+        <label className="setup-config-field experience-config-field">
+          <span>Cấu hình màn chơi</span>
+          <input
+            type="text"
+            value={themeConfig}
+            maxLength={48}
+            placeholder={selectedTheme === 'wheel' ? 'Ví dụ: Vòng quay may mắn' : 'Ví dụ: Bốc thăm giải đấu'}
+            onChange={(event) => onConfigChange(event.target.value)}
+          />
+          <small>Thiết lập này chỉ dùng cho màn {selectedTheme === 'arcade' ? 'Arcade' : selectedTheme === 'wheel' ? 'Vòng quay' : selectedTheme}.</small>
+        </label>
+      )}
     </section>
   )
 }

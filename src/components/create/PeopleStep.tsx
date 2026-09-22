@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { LockKeyhole, Plus, RotateCcw, Search, Sparkles } from 'lucide-react'
+import { LockKeyhole, Plus, Search, Sparkles, Users } from 'lucide-react'
 import type { Participant, Team } from '../../types/models'
 import { deleteParticipantImage } from '../../services/localDatabase'
 import { ConfirmModal } from './ConfirmModal'
@@ -11,7 +11,7 @@ interface PeopleStepProps {
   onAddTeam: () => void
   onAddTeams: (teams: Array<[string, string]>) => void
   onLoadDemo: () => void | Promise<void>
-  onReset: () => void
+  onBusyChange: (busy: boolean) => void
   onRemoveTeam: (teamId: string) => void
   onUpdateTeam: (teamId: string, updates: Pick<Team, 'name'>) => void
   onUpdateParticipant: (
@@ -26,7 +26,7 @@ export function PeopleStep({
   onAddTeam,
   onAddTeams,
   onLoadDemo,
-  onReset,
+  onBusyChange,
   onRemoveTeam,
   onUpdateTeam,
   onUpdateParticipant,
@@ -35,6 +35,7 @@ export function PeopleStep({
   const [showQuickAdd, setShowQuickAdd] = useState(false)
   const [loadingDemo, setLoadingDemo] = useState(false)
   const [teamToDelete, setTeamToDelete] = useState<Team>()
+  const [confirmDemo, setConfirmDemo] = useState(false)
   const readyCount = teams.filter((team) => team.participants.every((participant) => participant.name.trim())).length
   const peopleCount = teams.reduce((count, team) => count + team.participants.length, 0)
   const filteredTeams = useMemo(() => {
@@ -59,54 +60,48 @@ export function PeopleStep({
   const loadDemo = async () => {
     if (loadingDemo) return
     setLoadingDemo(true)
+    onBusyChange(true)
     try {
       await onLoadDemo()
     } finally {
       setLoadingDemo(false)
+      onBusyChange(false)
     }
   }
 
   return (
-    <section className="wizard-step people-step" aria-labelledby="people-title">
-      <header className="wizard-step__heading wizard-step__heading--row">
-        <div>
-          <p>02 / People</p>
-          <h1 id="people-title">Who's in?</h1>
-          <span>Add the teams that will enter the show.</span>
-        </div>
-        <div className="people-summary" aria-label={`${teams.length} teams, ${peopleCount} people`}>
-          <strong>{teams.length}<small>Teams</small></strong>
-          <strong>{peopleCount}<small>People</small></strong>
-          <strong data-incomplete={readyCount < teams.length}>{readyCount}<small>Ready</small></strong>
-        </div>
+    <section className="config-panel people-step" aria-labelledby="people-title">
+      <header className="config-panel-heading">
+        <span className="config-section-icon"><Users size={19} /></span>
+        <div><h2 id="people-title">Danh sách đội <span className="config-count">{teams.length}</span></h2>
+          <p>Mỗi đội gồm 2 thành viên. Ảnh đại diện không bắt buộc.</p></div>
+        <span className="people-total">{peopleCount} thành viên</span>
       </header>
 
       <div className="people-toolbar">
         <label>
           <Search size={16} aria-hidden="true" />
-          <span className="sr-only">Search teams</span>
-          <input value={search} placeholder="Search teams…" onChange={(event) => setSearch(event.target.value)} />
+          <span className="sr-only">Tìm đội hoặc thành viên</span>
+          <input value={search} placeholder="Tìm đội hoặc thành viên…" onChange={(event) => setSearch(event.target.value)} />
         </label>
-        <button type="button" onClick={() => setShowQuickAdd(true)}>Quick add</button>
-        <button type="button" onClick={() => void loadDemo()} disabled={loadingDemo}><Sparkles size={15} /> {loadingDemo ? 'Loading photos…' : 'Load demo'}</button>
-        <button className="people-reset-button" type="button" onClick={onReset} disabled={teams.length === 0}><RotateCcw size={15} /> Reset from start</button>
+        <button type="button" className="config-button" onClick={() => setShowQuickAdd(true)} disabled={loadingDemo}><Plus size={15} /> Nhập nhanh</button>
+        <button type="button" className="config-button" onClick={() => teams.length ? setConfirmDemo(true) : void loadDemo()} disabled={loadingDemo}><Sparkles size={15} /> {loadingDemo ? 'Đang tải…' : 'Dữ liệu mẫu'}</button>
       </div>
 
       {teams.length === 0 ? (
         <div className="people-empty">
           <span><Plus size={28} /></span>
-          <h2>No teams yet.</h2>
-          <p>Start one at a time, or paste your whole lineup.</p>
+          <h3>Thêm đội đầu tiên của bạn</h3>
+          <p>Nhập từng đội hoặc dán danh sách để thêm nhiều đội cùng lúc.</p>
           <div>
-            <button type="button" onClick={onAddTeam}>Add first team</button>
-            <button type="button" onClick={() => setShowQuickAdd(true)}>Quick add</button>
+            <button type="button" className="config-button config-button--primary" onClick={onAddTeam}><Plus size={16} /> Thêm đội</button>
           </div>
         </div>
       ) : (
         <>
           {readyCount < teams.length && (
             <p className="people-validation" role="status">
-              {readyCount} ready · {teams.length - readyCount} incomplete
+              Còn {teams.length - readyCount} đội chưa điền đủ tên thành viên.
             </p>
           )}
           <div className="team-list">
@@ -124,21 +119,25 @@ export function PeopleStep({
               )
             })}
           </div>
-          {filteredTeams.length === 0 && <p className="search-empty">No teams match “{search}”.</p>}
-          <button className="add-team-button" type="button" onClick={onAddTeam}><Plus size={18} /> Add team</button>
+          {filteredTeams.length === 0 && <p className="search-empty">Không tìm thấy đội nào với “{search}”.</p>}
+          <button className="add-team-button" type="button" onClick={onAddTeam}><Plus size={17} /> Thêm đội</button>
         </>
       )}
 
-      <p className="local-photo-note" title="Participant photos are processed and stored locally in your browser.">
-        <LockKeyhole size={13} /> Photos stay on this device.
+      <p className="local-photo-note">
+        <LockKeyhole size={13} /> Ảnh của bạn được lưu riêng trên thiết bị này.
       </p>
 
       {showQuickAdd && <QuickAddModal onClose={() => setShowQuickAdd(false)} onAdd={onAddTeams} />}
+      {confirmDemo && <ConfirmModal title="Dùng danh sách mẫu?"
+        description="32 đội mẫu sẽ thay thế danh sách đội hiện tại trong cấu hình."
+        confirmLabel="Dùng dữ liệu mẫu" onCancel={() => setConfirmDemo(false)}
+        onConfirm={() => { setConfirmDemo(false); void loadDemo() }} />}
       {teamToDelete && (
         <ConfirmModal
-          title="Delete this team?"
-          description="The team and its locally stored participant photos will be removed."
-          confirmLabel="Delete team"
+          title="Xóa đội này?"
+          description="Đội và ảnh thành viên đã lưu sẽ được xóa khỏi danh sách."
+          confirmLabel="Xóa đội"
           danger
           onCancel={() => setTeamToDelete(undefined)}
           onConfirm={() => void removeTeam(teamToDelete)}

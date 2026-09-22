@@ -1,20 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, Crown, GripVertical, Play, Plus, RotateCcw, Shuffle, Trash2, Users, Volume2, VolumeX } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { secureRandomInt } from '../../features/random/secureRandom'
-import { useShowSessionStore } from '../../stores/showSessionStore'
-import type { Team } from '../../types/models'
+import { MAX_WHEEL_OPTIONS, parseWheelOptions, useWheelConfigStore } from '../../stores/wheelConfigStore'
 import lotterySound from '../../assets/sounds/nhac-xo-so.mp3'
 import spinSound from '../../assets/sounds/retro-game-alarm.mp3'
 import wheelCenterImage from '../../assets/wheelo-transparent.png'
 import './wheel.css'
 
 const wheelColors = ['#d91f2b', '#ff742b', '#ffd13b', '#18a94e', '#1e9fac', '#2856ae', '#4030c2', '#a729b4', '#ed3b86', '#ed85bd', '#a77ee4', '#8d54d0']
-
-function teamLabel(team: Team) {
-  if (team.name?.trim()) return team.name.trim()
-  return team.participants.map((participant) => participant.name.trim()).filter(Boolean).join(' × ')
-}
 
 function shuffle<T>(items: T[]) {
   const result = [...items]
@@ -27,9 +21,9 @@ function shuffle<T>(items: T[]) {
 
 export function WheelShowPage() {
   const [searchParams] = useSearchParams()
-  const session = useShowSessionStore((state) => state.session)
+  const config = useWheelConfigStore()
   const demo = import.meta.env.DEV && searchParams.get('demo') === '1'
-  const initialOptions = useMemo(() => session?.teams.map(teamLabel).filter(Boolean) ?? (demo ? ['Minh', 'Hùng', 'Trang', 'Long', 'Hà', 'Duy', 'Tuấn', 'Vy', 'Khoa', 'An', 'Phương', 'Nam'] : []), [demo, session])
+  const [initialOptions] = useState(() => demo ? ['Minh', 'Hùng', 'Trang', 'Long', 'Hà', 'Duy', 'Tuấn', 'Vy', 'Khoa', 'An', 'Phương', 'Nam'] : parseWheelOptions(config.optionsText))
   const [options, setOptions] = useState(initialOptions)
   const [wheelOptions, setWheelOptions] = useState(initialOptions)
   const [optionsText, setOptionsText] = useState(() => initialOptions.join('\n'))
@@ -37,8 +31,8 @@ export function WheelShowPage() {
   const [winnerLabel, setWinnerLabel] = useState<string | null>(null)
   const [winnerIndex, setWinnerIndex] = useState<number | null>(null)
   const [spinning, setSpinning] = useState(false)
-  const [soundOn, setSoundOn] = useState(true)
-  const [selectedSound, setSelectedSound] = useState<'retro' | 'lottery'>('retro')
+  const { soundOn, selectedSound, setSoundOn, setSelectedSound } = config
+  const tooManyOptions = options.length > MAX_WHEEL_OPTIONS
   const timerRef = useRef<number | null>(null)
   const spinAudioRef = useRef<HTMLAudioElement | null>(null)
   const soundSrc = selectedSound === 'lottery' ? lotterySound : spinSound
@@ -79,7 +73,8 @@ export function WheelShowPage() {
 
   const updateOptions = (value: string) => {
     setOptionsText(value)
-    const next = value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean).slice(0, 32)
+    if (!demo) config.setOptionsText(value)
+    const next = parseWheelOptions(value)
     setOptions(next)
     setWheelOptions(next)
     setWinnerLabel(null)
@@ -88,7 +83,7 @@ export function WheelShowPage() {
   }
 
   const spin = () => {
-    if (spinning || wheelOptions.length < 2) return
+    if (spinning || wheelOptions.length < 2 || tooManyOptions) return
     const candidates = wheelOptions.map((_, index) => index)
     const winner = candidates[secureRandomInt(candidates.length)]
     const winnerName = wheelOptions[winner]
@@ -120,37 +115,34 @@ export function WheelShowPage() {
     closeResult()
   }
 
-  if (!session && !demo) {
-    return <main className="wheel-empty"><Crown size={44} /><h1>Lucky Wheel chưa có danh sách</h1><p>Hãy tạo show và nhập các team trước khi bắt đầu quay.</p><Link to="/create?theme=wheel">Tạo Lucky Wheel</Link></main>
-  }
-
   return (
     <main className="wheel-show">
       <div className="wheel-show__ambient" aria-hidden="true" />
 
       <aside className="wheel-panel wheel-panel--setup">
-        <Link className="wheel-back" to="/create?theme=wheel"><ArrowLeft size={16} /> Chỉnh sửa show</Link>
+        <Link className="wheel-back" to="/create?theme=wheel&screen=lucky-wheel"><ArrowLeft size={16} /> Chỉnh sửa cấu hình</Link>
         <header className="wheel-logo"><Crown /><strong><span>Lucky</span> Wheel</strong><small>Spin · Pick · Be Lucky</small></header>
 
         <section className="wheel-control-section">
           <h2><Users size={17} /> Danh sách lựa chọn <span>{options.length}</span></h2>
           <textarea value={optionsText} onChange={(event) => updateOptions(event.target.value)} disabled={spinning} placeholder="Nhập danh sách (mỗi dòng 1 tên)..." aria-label="Danh sách lựa chọn" />
+          {tooManyOptions && <p role="alert">Vòng quay hỗ trợ tối đa {MAX_WHEEL_OPTIONS} lựa chọn. Hãy rút gọn danh sách để bắt đầu.</p>}
           <div className="wheel-inline-actions">
-            <button type="button" disabled={spinning} onClick={() => updateOptions(`${optionsText}${optionsText && !optionsText.endsWith('\n') ? '\n' : ''}Lựa chọn ${options.length + 1}`)}><Plus size={16} /> Thêm nhanh</button>
+            <button type="button" disabled={spinning || options.length >= MAX_WHEEL_OPTIONS} onClick={() => updateOptions(`${optionsText}${optionsText && !optionsText.endsWith('\n') ? '\n' : ''}Lựa chọn ${options.length + 1}`)}><Plus size={16} /> Thêm nhanh</button>
             <button type="button" disabled={spinning} onClick={() => updateOptions('')}><Trash2 size={15} /> Xóa tất cả</button>
           </div>
         </section>
 
         <section className="wheel-control-section wheel-effects">
           <h2>Hiệu ứng</h2>
-          <button type="button" aria-pressed={soundOn} onClick={() => setSoundOn((value) => !value)}>{soundOn ? <Volume2 size={17} /> : <VolumeX size={17} />} {soundOn ? 'Bật âm thanh' : 'Tắt âm thanh'}</button>
+          <button type="button" aria-pressed={soundOn} onClick={() => setSoundOn(!soundOn)}>{soundOn ? <Volume2 size={17} /> : <VolumeX size={17} />} {soundOn ? 'Bật âm thanh' : 'Tắt âm thanh'}</button>
           <select value={selectedSound} onChange={(event) => setSelectedSound(event.target.value as 'retro' | 'lottery')} disabled={spinning} aria-label="Chọn nhạc quay">
             <option value="retro">Retro Game</option>
             <option value="lottery">Nhạc xổ số</option>
           </select>
         </section>
 
-        <button className="wheel-start" type="button" onClick={spin} disabled={spinning || wheelOptions.length < 2}><Play fill="currentColor" /><span>{spinning ? 'ĐANG QUAY...' : 'BẮT ĐẦU QUAY'}<small>Let fate decide!</small></span></button>
+        <button className="wheel-start" type="button" onClick={spin} disabled={spinning || wheelOptions.length < 2 || tooManyOptions}><Play fill="currentColor" /><span>{spinning ? 'ĐANG QUAY...' : 'BẮT ĐẦU QUAY'}<small>Let fate decide!</small></span></button>
       </aside>
 
       <section className="wheel-stage" aria-label="Lucky Wheel">
@@ -169,15 +161,15 @@ export function WheelShowPage() {
               ))}
             </div>
             <div className="lucky-wheel__pointer"><i /></div>
-            <button className="lucky-wheel__hub" type="button" onClick={spin} disabled={spinning || wheelOptions.length < 2} aria-label="Quay vòng quay"><img src={wheelCenterImage} alt="" /></button>
+            <button className="lucky-wheel__hub" type="button" onClick={spin} disabled={spinning || wheelOptions.length < 2 || tooManyOptions} aria-label="Quay vòng quay"><img src={wheelCenterImage} alt="" /></button>
           </div>
           <div className="wheel-game-screen__city" aria-hidden="true"><i /><i /><i /><i /><i /></div>
-          <button className="wheel-game-screen__spin" type="button" onClick={spin} disabled={spinning || wheelOptions.length < 2}><span>&gt;&gt;&gt;</span>{spinning ? 'SPINNING...' : 'PRESS THE BUTTON TO SPIN!'}<span>&lt;&lt;&lt;</span></button>
+          <button className="wheel-game-screen__spin" type="button" onClick={spin} disabled={spinning || wheelOptions.length < 2 || tooManyOptions}><span>&gt;&gt;&gt;</span>{spinning ? 'SPINNING...' : 'PRESS THE BUTTON TO SPIN!'}<span>&lt;&lt;&lt;</span></button>
         </div>
       </section>
 
       <aside className="wheel-panel wheel-panel--list">
-        <header><h2><Users size={18} /> Danh sách ({options.length})</h2><button type="button" disabled={spinning} onClick={() => { const next = shuffle(options); setOptions(next); setWheelOptions(next); setOptionsText(next.join('\n')); closeResult(); setRotation(0) }}><Shuffle size={15} /> Xáo trộn</button></header>
+        <header><h2><Users size={18} /> Danh sách ({options.length})</h2><button type="button" disabled={spinning} onClick={() => updateOptions(shuffle(options).join('\n'))}><Shuffle size={15} /> Xáo trộn</button></header>
         <ol>
           {options.map((option, index) => <li key={`${option}-list-${index}`}><span>{index + 1}</span><b>{option}</b><GripVertical size={15} /></li>)}
         </ol>

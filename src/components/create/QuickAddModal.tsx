@@ -30,56 +30,87 @@ const parseLines = (input: string): ParsedLine[] => input
 export function QuickAddModal({ onClose, onAdd }: QuickAddModalProps) {
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const closeRef = useRef(onClose)
   const parsed = useMemo(() => parseLines(input), [input])
   const validTeams = parsed.flatMap((line) => line.names ? [line.names] : [])
   const invalidLines = parsed.filter((line) => !line.names)
 
   useEffect(() => {
+    closeRef.current = onClose
+  }, [onClose])
+
+  useEffect(() => {
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
     textareaRef.current?.focus()
     const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        closeRef.current()
+      }
+      if (event.key !== 'Tab') return
+      const controls = dialogRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), textarea, input, [tabindex="0"]')
+      if (!controls?.length) return
+      const first = controls[0]
+      const last = controls[controls.length - 1]
+      if (event.shiftKey && (document.activeElement === first || !dialogRef.current?.contains(document.activeElement))) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && (document.activeElement === last || !dialogRef.current?.contains(document.activeElement))) {
+        event.preventDefault()
+        first.focus()
+      }
     }
     window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [onClose])
+    return () => {
+      window.removeEventListener('keydown', handleKey)
+      if (previousFocus?.isConnected) previousFocus.focus()
+    }
+  }, [])
 
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
-      <div className="quick-modal" role="dialog" aria-modal="true" aria-labelledby="quick-title" onMouseDown={(event) => event.stopPropagation()}>
+      <div ref={dialogRef} className="quick-modal" role="dialog" aria-modal="true" aria-labelledby="quick-title" onMouseDown={(event) => event.stopPropagation()}>
         <header>
           <div>
-            <p>Paste your lineup</p>
-            <h2 id="quick-title">Quick add</h2>
+            <p>Nhập danh sách đội</p>
+            <h2 id="quick-title">Thêm nhanh</h2>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close quick add"><X size={20} /></button>
+          <button type="button" onClick={onClose} aria-label="Đóng thêm nhanh"><X size={20} /></button>
         </header>
-        <label htmlFor="quick-input">One team per line</label>
+        <label htmlFor="quick-input">Mỗi dòng là một đội gồm hai người</label>
         <textarea
           ref={textareaRef}
           id="quick-input"
           value={input}
+          aria-invalid={invalidLines.length > 0}
+          aria-describedby={invalidLines.length > 0 ? 'quick-hint quick-errors' : 'quick-hint'}
           placeholder={'Trung | Hùng\nNam | Minh\nTuấn | Long'}
           onChange={(event) => setInput(event.target.value)}
         />
-        <div className="quick-modal__hint">
-          <span>Separators: | comma or tab</span>
-          <strong>{validTeams.length} team{validTeams.length === 1 ? '' : 's'} detected</strong>
+        <div className="quick-modal__hint" id="quick-hint">
+          <span>Ngăn cách hai tên bằng dấu |, dấu phẩy hoặc tab.</span>
+          <strong>{validTeams.length} đội hợp lệ</strong>
         </div>
         {invalidLines.length > 0 && (
-          <div className="quick-modal__errors" role="alert">
-            <strong>Check {invalidLines.length} line{invalidLines.length === 1 ? '' : 's'}:</strong>
+          <div className="quick-modal__errors" id="quick-errors" role="alert">
+            <strong>Cần sửa {invalidLines.length} dòng: mỗi dòng phải có đủ hai tên.</strong>
             {invalidLines.slice(0, 4).map((line) => (
-              <span key={line.lineNumber}>Line {line.lineNumber}: {line.raw}</span>
+              <span key={line.lineNumber}>Dòng {line.lineNumber}: {line.raw}</span>
             ))}
           </div>
         )}
         <button
           className="quick-modal__submit"
           type="button"
-          disabled={validTeams.length === 0}
-          onClick={() => { onAdd(validTeams); onClose() }}
+          disabled={validTeams.length === 0 || invalidLines.length > 0}
+          onClick={() => {
+            if (validTeams.length === 0 || invalidLines.length > 0) return
+            onAdd(validTeams)
+            onClose()
+          }}
         >
-          Add {validTeams.length} team{validTeams.length === 1 ? '' : 's'}
+          Thêm {validTeams.length} đội
         </button>
       </div>
     </div>

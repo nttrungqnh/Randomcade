@@ -6,12 +6,11 @@ import { calculateGroupCapacities, getGroupName } from '../../utils/groupSetup'
 interface SetupStepProps {
   teams: Team[]
   groupCount: number
-  showConfig: string
   onGroupCountChange: (count: number) => void
-  onShowConfigChange: (value: string) => void
+  screenName?: string
 }
 
-export function SetupStep({ teams, groupCount, showConfig, onGroupCountChange, onShowConfigChange }: SetupStepProps) {
+export function SetupStep({ teams, groupCount, onGroupCountChange, screenName }: SetupStepProps) {
   const teamCount = teams.length
   const maxGroupCount = Math.max(2, teamCount)
   const safeGroupCount = Math.min(Math.max(2, groupCount), maxGroupCount)
@@ -33,8 +32,8 @@ export function SetupStep({ teams, groupCount, showConfig, onGroupCountChange, o
     <section className="wizard-step setup-step" aria-labelledby="setup-title">
       <header className="wizard-step__heading">
         <p>03 / Setup</p>
-        <h1 id="setup-title">Set the rules</h1>
-        <span>Choose how your teams will be arranged.</span>
+        <h1 id="setup-title">{screenName ? `Cấu hình ${screenName}` : 'Set the rules'}</h1>
+        <span>{screenName ? `Thiết lập cách ${screenName} chia đội và bốc thăm.` : 'Choose how your teams will be arranged.'}</span>
       </header>
 
       <div className="setup-layout">
@@ -80,17 +79,6 @@ export function SetupStep({ teams, groupCount, showConfig, onGroupCountChange, o
             <i aria-hidden="true">→</i>
             <strong>{exact ? minPerGroup : `${minPerGroup}–${maxPerGroup}`}<small>Per group</small></strong>
           </div>
-          <label className="setup-config-field">
-            <span>Tournament configuration</span>
-            <input
-              type="text"
-              value={showConfig}
-              maxLength={48}
-              placeholder="e.g. Mixed doubles 5.0"
-              onChange={(event) => onShowConfigChange(event.target.value)}
-            />
-            <small>Shown on the arcade marquee</small>
-          </label>
           {!exact && <p className="balance-note">Groups will contain {minPerGroup}–{maxPerGroup} teams.</p>}
         </div>
 

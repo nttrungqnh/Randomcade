@@ -13,6 +13,7 @@ export interface Team {
 export type RandomType = 'teams'
 
 export type ExperienceTheme = 'arcade' | 'casino' | 'wheel' | 'lottery'
+export type ThemeConfigs = Partial<Record<ExperienceTheme, string>>
 
 export interface Group {
   id: string
@@ -45,7 +46,8 @@ export type ShowSessionStatus = 'idle' | 'running' | 'completed'
 export interface ShowSession {
   id: string
   startedAt: number
-  showConfig?: string
+  screenConfig?: string
+  hostName?: string
   teams: Team[]
   groups: Group[]
   drawHistory: DrawResult[]

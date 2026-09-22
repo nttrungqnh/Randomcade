@@ -10,7 +10,7 @@ import { ArcadeMachine } from './components/ArcadeMachine'
 import { ArcadeResultPanel } from './components/ArcadeResultPanel'
 import { DrawnTeamsStrip } from './components/DrawnTeamsStrip'
 import alarmSoundUrl from '../../assets/sounds/retro-game-alarm.mp3'
-import { PixelBall, PixelCrown, PixelCity } from './components/ArcadePixelArt'
+import { PixelBall } from './components/ArcadePixelArt'
 import './styles/arcade-cabinet.css'
 
 export function ArcadeShowPage() {
@@ -128,8 +128,8 @@ export function ArcadeShowPage() {
     <div className="arcade-shell">
       <header className="arcade-show-brand">
         <div className="arcade-logo"><strong>Drawshow</strong><span>RANDOM MADE EPIC</span><PixelBall /></div>
-        <div className="arcade-marquee pixel-frame"><span aria-hidden="true">»</span><div><strong>{session.showConfig?.trim() || 'BỐC THĂM MAY MẮN'}</strong><small>PICKLEBALL TOURNAMENT DRAW</small></div><span aria-hidden="true">«</span></div>
-        <div className="arcade-header-right"><p>SAME COURT<br />BIGGER FRIENDS <PixelCrown /></p><div className="arcade-live pixel-frame"><b><i /> LIVE</b><span>{String(visibleHistory.length).padStart(2, '0')}/{String(session.teams.length).padStart(2, '0')}</span></div></div>
+        <div className="arcade-marquee pixel-frame"><span aria-hidden="true">»</span><div><strong>{session.screenConfig?.trim() || 'BỐC THĂM MAY MẮN'}</strong><small>{session.hostName?.trim() ? `TỔ CHỨC BỞI ${session.hostName.trim()}` : 'PICKLEBALL TOURNAMENT DRAW'}</small></div><span aria-hidden="true">«</span></div>
+        <div className="arcade-header-right"><div className="arcade-live pixel-frame"><b><i /> LIVE</b><span>{String(visibleHistory.length).padStart(2, '0')}/{String(session.teams.length).padStart(2, '0')}</span></div></div>
       </header>
       <section className="arcade-main-stage">
         <ArcadeMachine visualState={session.status === 'completed' && !isAnimating ? 'complete' : visualState} teams={remainingTeams} selectedTeam={selectedTeam} onPush={handlePush} onUndo={handleUndo} soundEnabled={soundEnabled} onToggleSound={() => setSoundEnabled((value) => !value)} disabled={isAnimating || session.status === 'completed'} historyDisabled={isAnimating || drawn === 0} />
@@ -138,8 +138,6 @@ export function ArcadeShowPage() {
       <ArcadeGroupBoard groups={visibleGroups} teams={session.teams} activeGroupId={isAnimating ? selectedGroup?.id : undefined} />
       <footer className="arcade-bottom pixel-frame">
         <DrawnTeamsStrip history={visibleHistory} teams={session.teams} />
-        <PixelCity className="arcade-city" />
-        <p className="arcade-footer-motto">PICKLEBALL<br />MORE FRIENDS<br />A BRIGHTER TOMORROW</p>
         <nav className="arcade-operator" aria-label="Điều khiển màn chơi">
           <button className="pixel-frame" onClick={() => setConfirmReset(true)} disabled={isAnimating || drawn === 0} aria-label="Bốc thăm lại" title="Bốc thăm lại"><RotateCcw /></button>
           <button className="pixel-frame" onClick={enterFullscreen} aria-label="Toàn màn hình" title="Toàn màn hình (F)"><Maximize /><span>TOÀN MÀN HÌNH</span></button>

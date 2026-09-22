@@ -10,6 +10,13 @@ interface PhotoPickerProps {
   onImageChange: (imageId?: string) => void
 }
 
+const photoErrorMessages: Record<string, string> = {
+  'Choose a JPEG, PNG, or WebP image.': 'Vui lòng chọn ảnh JPEG, PNG hoặc WebP.',
+  'This image could not be opened.': 'Không thể mở ảnh này. Vui lòng chọn ảnh khác.',
+  'Image processing is unavailable in this browser.': 'Trình duyệt này không hỗ trợ xử lý ảnh.',
+  'The processed image could not be saved.': 'Không thể lưu ảnh. Vui lòng thử lại.',
+}
+
 export function PhotoPicker({ participant, onImageChange }: PhotoPickerProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [processing, setProcessing] = useState(false)
@@ -31,7 +38,7 @@ export function PhotoPicker({ participant, onImageChange }: PhotoPickerProps) {
       onImageChange(imageId)
       setRevision((value) => value + 1)
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Photo could not be processed.')
+      setError((reason instanceof Error && photoErrorMessages[reason.message]) || 'Không thể xử lý ảnh. Vui lòng thử lại.')
     } finally {
       setProcessing(false)
       if (inputRef.current) inputRef.current.value = ''
@@ -56,7 +63,7 @@ export function PhotoPicker({ participant, onImageChange }: PhotoPickerProps) {
         ref={inputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp"
-        aria-label={`Choose photo for ${participant.name || 'player'}`}
+        aria-label={`Chọn ảnh cho ${participant.name || 'người chơi'}`}
         onChange={(event) => void handleFile(event.target.files?.[0])}
       />
       <button
@@ -64,7 +71,7 @@ export function PhotoPicker({ participant, onImageChange }: PhotoPickerProps) {
         type="button"
         data-dragging={dragging}
         data-has-image={Boolean(imageUrl)}
-        aria-label={`${imageUrl ? 'Change' : 'Add'} photo for ${participant.name || 'player'}`}
+        aria-label={`${imageUrl ? 'Đổi' : 'Thêm'} ảnh cho ${participant.name || 'người chơi'}`}
         onClick={() => inputRef.current?.click()}
         onDragEnter={() => setDragging(true)}
         onDragLeave={() => setDragging(false)}
@@ -74,14 +81,14 @@ export function PhotoPicker({ participant, onImageChange }: PhotoPickerProps) {
         {imageUrl ? <img src={imageUrl} alt="" /> : (
           <span>
             {processing || loading ? <LoaderCircle className="spin" size={18} /> : <Camera size={18} />}
-            <small>{processing ? 'Processing' : 'Add photo'}</small>
+            <small>{processing ? 'Đang xử lý' : 'Thêm ảnh'}</small>
           </span>
         )}
-        {imageUrl && <span className="photo-picker__change">Change</span>}
+        {imageUrl && <span className="photo-picker__change">Đổi ảnh</span>}
       </button>
       {participant.imageId && (
-        <button className="photo-remove" type="button" onClick={() => void removePhoto()} aria-label="Remove photo">
-          <Trash2 size={13} /> Remove
+        <button className="photo-remove" type="button" onClick={() => void removePhoto()} aria-label={`Xóa ảnh của ${participant.name || 'người chơi'}`}>
+          <Trash2 size={13} /> Xóa ảnh
         </button>
       )}
       {error && <small className="field-error" role="alert">{error}</small>}

@@ -36,7 +36,6 @@ export function ArcadeMachine({ visualState, teams, selectedTeam, onPush, onUndo
   return <section className={`arcade-machine arcade-machine--${visualState} pixel-frame`} data-arcade-machine aria-label="Khu vực bốc thăm">
     <header className="arcade-machine-heading">
       <div className="arcade-machine-heading__title"><h1><span aria-hidden="true">»</span> CHỌN ĐỘI</h1><p>CHỌN CẶP VẬN ĐỘNG VIÊN ĐỂ BỐC THĂM</p></div>
-      <div className="arcade-friends" aria-hidden="true">Same Court<br /><span>Bigger Friends</span></div>
       <div className="arcade-pool-count"><strong>{teams.length} ĐỘI</strong><span>{teams.reduce((total, team) => total + team.participants.length, 0)} VĐV</span></div>
       <div className="arcade-community" aria-hidden="true"><PixelBall /><small>PICKLEBALL<br />COMMUNITY</small></div>
     </header>

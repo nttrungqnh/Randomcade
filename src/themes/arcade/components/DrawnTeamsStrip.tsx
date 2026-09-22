@@ -11,10 +11,10 @@ export function DrawnTeamsStrip({ history, teams }: { history: DrawResult[]; tea
   return <section className="arcade-history" aria-label="Lịch sử bốc thăm">
     <header>ĐÃ BỐC <b>{String(history.length).padStart(2, '0')}/{String(teams.length).padStart(2, '0')}</b></header>
     <div className="arcade-history__rail">
-      {teams.map((_, index) => {
-        const draw = history[index]
-        const team = draw ? teams.find((item) => item.id === draw.teamId) : undefined
-        return team ? <div key={draw.id} className="arcade-history__team" title={team.participants.map((p) => p.name).join(' × ')} data-history-card><div className="arcade-history__people">{team.participants.slice(0, 2).map((participant) => <MiniParticipant key={participant.id} participant={participant} />)}</div></div> : <span className="arcade-history__pending" key={`pending-${index}`} aria-label={`Lượt ${index + 1}: chưa bốc`} />
+      {history.map((draw) => {
+        const team = teams.find((item) => item.id === draw.teamId)
+        if (!team) return null
+        return <div key={draw.id} className="arcade-history__team" title={team.participants.map((p) => p.name).join(' × ')} data-history-card><div className="arcade-history__people">{team.participants.slice(0, 2).map((participant) => <MiniParticipant key={participant.id} participant={participant} />)}</div></div>
       })}
     </div>
   </section>

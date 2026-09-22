@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { downloadDemoParticipantImages } from '../services/demoImageLoader'
-import type { ExperienceTheme, Participant, RandomType, Team } from '../types/models'
+import type { ExperienceTheme, Participant, RandomType, Team, ThemeConfigs } from '../types/models'
 
 const createId = () => crypto.randomUUID()
 
@@ -17,7 +17,9 @@ const createTeam = (names: [string, string] = ['', '']): Team => ({
 
 interface ShowBuilderState {
   showName: string
-  showConfig: string
+  hostName: string
+  tournamentName: string
+  themeConfigs: ThemeConfigs
   randomType: RandomType | null
   teams: Team[]
   groupCount: number
@@ -35,7 +37,9 @@ interface ShowBuilderState {
   ) => void
   loadDemo: () => Promise<void>
   setGroupCount: (count: number) => void
-  setShowConfig: (showConfig: string) => void
+  setThemeConfig: (theme: ExperienceTheme, config: string) => void
+  setHostName: (hostName: string) => void
+  setTournamentName: (tournamentName: string) => void
   setTheme: (theme: ExperienceTheme) => void
   setStep: (step: number) => void
   resetBuilder: () => void
@@ -43,7 +47,9 @@ interface ShowBuilderState {
 
 const initialState = {
   showName: '',
-  showConfig: '',
+  hostName: '',
+  tournamentName: '',
+  themeConfigs: {},
   randomType: null,
   teams: [] as Team[],
   groupCount: 2,
@@ -55,6 +61,8 @@ export const useShowBuilderStore = create<ShowBuilderState>()(
   persist(
     (set) => ({
       ...initialState,
+      setHostName: (hostName) => set({ hostName }),
+      setTournamentName: (tournamentName) => set({ tournamentName }),
       setRandomType: (randomType) => set({ randomType }),
       addTeam: () => set((state) => ({ teams: [...state.teams, createTeam()] })),
       addTeams: (teams) => set((state) => ({
@@ -104,7 +112,7 @@ export const useShowBuilderStore = create<ShowBuilderState>()(
         }
       },
       setGroupCount: (groupCount) => set({ groupCount }),
-      setShowConfig: (showConfig) => set({ showConfig }),
+      setThemeConfig: (theme, config) => set((state) => ({ themeConfigs: { ...state.themeConfigs, [theme]: config } })),
       setTheme: (selectedTheme) => set({ selectedTheme }),
       setStep: (currentStep) => set({ currentStep }),
       resetBuilder: () => set(initialState),
@@ -114,7 +122,9 @@ export const useShowBuilderStore = create<ShowBuilderState>()(
       version: 1,
       partialize: (state) => ({
         showName: state.showName,
-        showConfig: state.showConfig,
+        hostName: state.hostName,
+        tournamentName: state.tournamentName,
+        themeConfigs: state.themeConfigs,
         randomType: state.randomType,
         teams: state.teams,
         groupCount: state.groupCount,

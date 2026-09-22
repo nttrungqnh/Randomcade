@@ -9,7 +9,7 @@ import type { ExperienceTheme } from '../types/models'
 interface ShowSessionState {
   session: ShowSession | null
   isDrawing: boolean
-  startSession: (teams: Team[], groupCount: number, selectedTheme: ExperienceTheme | null, showConfig?: string) => void
+  startSession: (teams: Team[], groupCount: number, selectedTheme: ExperienceTheme | null, screenConfig?: string, hostName?: string) => void
   drawNext: () => DrawResult | null
   drawAll: () => DrawResult[]
   undoLastDraw: () => DrawResult | null
@@ -49,7 +49,7 @@ export const useShowSessionStore = create<ShowSessionState>()(
     (set, get) => ({
       session: null,
       isDrawing: false,
-      startSession: (teams, groupCount, selectedTheme, showConfig) => {
+      startSession: (teams, groupCount, selectedTheme, screenConfig, hostName) => {
         const invalid = teams.length < 2 || groupCount < 2 || groupCount > teams.length || teams.some((team) => team.participants.some((person) => !person.name.trim()))
         if (invalid) {
           set({ session: null, isDrawing: false })
@@ -59,7 +59,8 @@ export const useShowSessionStore = create<ShowSessionState>()(
           session: {
             id: createId(),
             startedAt: Date.now(),
-            showConfig: showConfig?.trim() || '',
+            screenConfig: screenConfig?.trim() || '',
+            hostName: hostName?.trim() || '',
             teams: structuredClone(teams),
             groups: buildGroups(teams.length, groupCount),
             drawHistory: [],

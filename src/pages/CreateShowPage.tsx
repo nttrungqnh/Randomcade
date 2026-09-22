@@ -1,140 +1,160 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, Check, RotateCcw } from 'lucide-react'
-import gsap from 'gsap'
+import { useState } from 'react'
+import { ArrowLeft, ArrowRight, Check, Dice5, LayoutGrid, RotateCcw, ShieldCheck, Users } from 'lucide-react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { ConfirmModal } from '../components/create/ConfirmModal'
-import { ExperienceStep } from '../components/create/ExperienceStep'
 import { PeopleStep } from '../components/create/PeopleStep'
-import { ReadyStep } from '../components/create/ReadyStep'
-import { SetupStep } from '../components/create/SetupStep'
-import { TypeStep } from '../components/create/TypeStep'
-import { WizardProgress } from '../components/create/WizardProgress'
-import { clearUnusedImages } from '../services/localDatabase'
+import { WheelSetup } from '../components/create/WheelSetup'
 import { useShowBuilderStore } from '../stores/showBuilderStore'
 import { useShowSessionStore } from '../stores/showSessionStore'
-import type { ExperienceTheme } from '../types/models'
+import { calculateGroupCapacities, getGroupName } from '../utils/groupSetup'
 import '../create.css'
 
-const supportedThemes = new Set<ExperienceTheme>(['arcade', 'casino', 'wheel', 'lottery'])
-
-export function CreateShowPage() {
+function TeamDrawSetup() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const stepRef = useRef<HTMLDivElement>(null)
-  const previousStepRef = useRef(1)
-  const appliedThemeRef = useRef(false)
-  const [showClearConfirm, setShowClearConfirm] = useState(false)
   const store = useShowBuilderStore()
-  const startSession = useShowSessionStore((state) => state.startSession)
-  const clearSession = useShowSessionStore((state) => state.clearSession)
-  const readyTeams = store.teams.filter((team) => team.participants.every((participant) => participant.name.trim())).length
-  const peopleValid = store.teams.length >= 2 && readyTeams === store.teams.length
-  const setupValid = store.groupCount >= 2 && store.groupCount <= store.teams.length
-  const stepValid = [
-    false,
-    store.randomType === 'teams',
-    peopleValid,
-    setupValid,
-    store.selectedTheme === 'arcade' || store.selectedTheme === 'wheel',
-    true,
-  ][store.currentStep]
+  const [confirmReset, setConfirmReset] = useState(false)
+  const [confirmStart, setConfirmStart] = useState(false)
+  const [loadingDemo, setLoadingDemo] = useState(false)
+  const readyCount = store.teams.filter((team) =>
+    team.participants.length === 2 && team.participants.every((person) => person.name.trim()),
+  ).length
+  const peopleCount = store.teams.reduce((count, team) => count + team.participants.length, 0)
+  const validGroups = Number.isInteger(store.groupCount) && store.groupCount >= 2 && store.groupCount <= store.teams.length
+  const capacities = validGroups ? calculateGroupCapacities(store.teams.length, store.groupCount) : []
+  const missing: string[] = []
+  if (!store.hostName.trim()) missing.push('Nhập tên của bạn.')
+  if (!store.tournamentName.trim()) missing.push('Nhập tên giải.')
+  if (store.teams.length < 2) missing.push('Thêm ít nhất 2 đội để bốc thăm.')
+  if (readyCount < store.teams.length) missing.push('Điền đủ tên hai thành viên của mỗi đội.')
+  if (store.teams.length >= 2 && !validGroups) missing.push(`Chọn số bảng nguyên từ 2 đến ${store.teams.length}.`)
+  const canStart = missing.length === 0 && !loadingDemo
 
-  useEffect(() => {
-    if (appliedThemeRef.current) return
-    const requestedTheme = searchParams.get('theme') as ExperienceTheme | null
-    if (requestedTheme && supportedThemes.has(requestedTheme)) {
-      store.setTheme(requestedTheme)
-    }
-    appliedThemeRef.current = true
-  }, [searchParams, store])
-
-  useEffect(() => {
-    const participantIds = store.teams.flatMap((team) => team.participants.map((participant) => participant.id))
-    void clearUnusedImages(participantIds).catch(() => undefined)
-  }, [])
-
-  useLayoutEffect(() => {
-    const direction = store.currentStep >= previousStepRef.current ? 1 : -1
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const context = gsap.context(() => {
-      gsap.fromTo(
-        stepRef.current,
-        { opacity: 0, x: reduceMotion ? 0 : 28 * direction },
-        { opacity: 1, x: 0, duration: reduceMotion ? 0.15 : 0.4, ease: 'power2.out' },
-      )
-    })
-    previousStepRef.current = store.currentStep
-    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
-    return () => context.revert()
-  }, [store.currentStep])
-
-  const goBack = () => store.setStep(Math.max(1, store.currentStep - 1))
-  const goNext = () => {
-    if (!stepValid) return
-    store.setStep(Math.min(5, store.currentStep + 1))
+  const start = () => {
+    if (!canStart) return
+    useShowSessionStore.getState().startSession(
+      store.teams, store.groupCount, 'arcade', store.tournamentName, store.hostName,
+    )
+    if (useShowSessionStore.getState().session) navigate('/show/arcade')
   }
 
-  const clearShow = async () => {
-    const participantIds = store.teams.flatMap((team) => team.participants.map((participant) => participant.id))
-    store.resetBuilder()
-    clearSession()
-    await clearUnusedImages(participantIds.filter(() => false))
-    setShowClearConfirm(false)
+  const requestStart = () => {
+    if (!canStart) return
+    const current = useShowSessionStore.getState().session
+    if (current?.drawHistory.length) setConfirmStart(true)
+    else start()
   }
 
   return (
-    <div className="create-page">
-      <header className="create-header">
-        <Link className="create-logo" to="/" aria-label="Back to RandomShow home"><span>RANDOM</span><strong>SHOW</strong></Link>
-        <span className="create-header__mode">Prepare your show</span>
-        <div className="save-status"><Check size={13} /> Saved locally</div>
-      </header>
-
-      <WizardProgress currentStep={store.currentStep} />
-
-      <main ref={stepRef} className="create-main" key={store.currentStep}>
-        {store.currentStep === 1 && <TypeStep selected={store.randomType} onSelect={store.setRandomType} />}
-        {store.currentStep === 2 && (
+    <>
+      <div className="config-layout">
+        <div className="config-content">
+          <section className="config-panel" aria-labelledby="event-details-title">
+            <div className="config-panel-heading">
+              <span className="config-section-icon"><Users size={19} /></span>
+              <div><h2 id="event-details-title">Thông tin giải đấu</h2><p>Thông tin sẽ xuất hiện trên màn hình bốc thăm.</p></div>
+            </div>
+            <div className="config-fields">
+              <label className="config-field">
+                <span>Tên của bạn <span aria-hidden="true">*</span></span>
+                <input required autoComplete="name" value={store.hostName} maxLength={40}
+                  placeholder="Nhập tên người tổ chức" onChange={(event) => store.setHostName(event.target.value)} />
+              </label>
+              <label className="config-field">
+                <span>Tên giải <span aria-hidden="true">*</span></span>
+                <input required value={store.tournamentName} maxLength={48}
+                  placeholder="Ví dụ: Giải Pickleball giao hữu" onChange={(event) => store.setTournamentName(event.target.value)} />
+              </label>
+            </div>
+          </section>
           <PeopleStep
-            teams={store.teams}
-            onAddTeam={store.addTeam}
-            onAddTeams={store.addTeams}
-            onLoadDemo={store.loadDemo}
-            onReset={() => setShowClearConfirm(true)}
-            onRemoveTeam={store.removeTeam}
-            onUpdateTeam={store.updateTeam}
+            teams={store.teams} onAddTeam={store.addTeam} onAddTeams={store.addTeams}
+            onLoadDemo={store.loadDemo} onBusyChange={setLoadingDemo}
+            onRemoveTeam={store.removeTeam} onUpdateTeam={store.updateTeam}
             onUpdateParticipant={store.updateParticipant}
           />
-        )}
-        {store.currentStep === 3 && <SetupStep teams={store.teams} groupCount={store.groupCount} showConfig={store.showConfig} onGroupCountChange={store.setGroupCount} onShowConfigChange={store.setShowConfig} />}
-        {store.currentStep === 4 && <ExperienceStep selectedTheme={store.selectedTheme} onSelect={store.setTheme} />}
-        {store.currentStep === 5 && <ReadyStep teams={store.teams} groupCount={store.groupCount} selectedTheme={store.selectedTheme} onStart={() => { startSession(store.teams, store.groupCount, store.selectedTheme, store.showConfig); navigate(store.selectedTheme === 'wheel' ? '/show/wheel' : '/show/arcade') }} />}
-      </main>
-
-      <div className="wizard-actions">
-        <button className="clear-show" type="button" onClick={() => setShowClearConfirm(true)} disabled={store.teams.length === 0}>
-          <RotateCcw size={14} /> Reset from start
-        </button>
-        <div>
-          <button type="button" onClick={goBack} disabled={store.currentStep === 1}><ArrowLeft size={16} /> Back</button>
-          {store.currentStep < 5 && (
-            <button className="continue-button" type="button" onClick={goNext} disabled={!stepValid}>
-              Continue <ArrowRight size={16} />
-            </button>
-          )}
         </div>
+        <aside className="config-sidebar" aria-label="Thiết lập chia bảng">
+          <section className="config-panel">
+            <div className="config-panel-heading">
+              <span className="config-section-icon"><LayoutGrid size={19} /></span>
+              <div><h2>Chia bảng</h2><p>Các đội được chia đều vào mỗi bảng.</p></div>
+            </div>
+            <label className="config-field">
+              <span>Số bảng</span>
+              <input type="number" min={2} max={Math.max(2, store.teams.length)} step={1}
+                value={Number.isFinite(store.groupCount) ? store.groupCount : ''}
+                aria-describedby="group-count-hint"
+                onChange={(event) => store.setGroupCount(event.target.value === '' ? 0 : Number(event.target.value))} />
+              <small id="group-count-hint">Từ 2 bảng, không vượt quá số đội tham gia.</small>
+            </label>
+            {capacities.length > 0 ? (
+              <div className="config-groups" aria-label="Dự kiến số đội mỗi bảng">
+                {capacities.map((capacity, index) => (
+                  <div key={index}><span>Bảng {getGroupName(index)}</span><b>{capacity} đội</b></div>
+                ))}
+              </div>
+            ) : <p className="config-placeholder">Thêm đội và chọn số bảng để xem phân bổ.</p>}
+            {capacities.length > 0 && <p className="config-note">Số đội giữa các bảng chênh lệch tối đa 1 đội.</p>}
+          </section>
+          <section className="config-panel config-launch">
+            <h2>Sẵn sàng bốc thăm?</h2>
+            <dl className="config-summary">
+              <div><dt>Đội tham gia</dt><dd>{store.teams.length}</dd></div>
+              <div><dt>Thành viên</dt><dd>{peopleCount}</dd></div>
+              <div><dt>Đội đủ thông tin</dt><dd>{readyCount}/{store.teams.length}</dd></div>
+            </dl>
+            {missing.length > 0 && <ul className="config-checklist" id="team-draw-requirements">
+              {missing.map((message) => <li key={message}>{message}</li>)}
+            </ul>}
+            <button type="button" className="config-button config-button--primary config-start"
+              disabled={!canStart} aria-describedby={missing.length ? 'team-draw-requirements' : undefined}
+              onClick={requestStart}>
+              {loadingDemo ? 'Đang tải ảnh mẫu…' : 'Bắt đầu bốc thăm'} <ArrowRight size={17} />
+            </button>
+            <p className="config-note config-note--center">Vào thẳng màn Team Draw sau khi thiết lập.</p>
+          </section>
+          <p className="config-private"><ShieldCheck size={16} /> Danh sách và ảnh chỉ lưu trên thiết bị này.</p>
+          <button type="button" className="config-reset" disabled={loadingDemo}
+            onClick={() => setConfirmReset(true)}><RotateCcw size={14} /> Làm lại cấu hình</button>
+        </aside>
       </div>
+      {confirmReset && <ConfirmModal title="Làm lại cấu hình Team Draw?"
+        description="Xóa thông tin giải và danh sách đội trong bản cấu hình này. Kết quả bốc thăm đang có vẫn được giữ."
+        confirmLabel="Làm lại" danger onCancel={() => setConfirmReset(false)}
+        onConfirm={() => { store.resetBuilder(); setConfirmReset(false) }} />}
+      {confirmStart && <ConfirmModal title="Bắt đầu lượt bốc thăm mới?"
+        description="Lượt mới sẽ thay thế kết quả bốc thăm hiện tại."
+        confirmLabel="Bắt đầu lượt mới" onCancel={() => setConfirmStart(false)}
+        onConfirm={() => { setConfirmStart(false); start() }} />}
+    </>
+  )
+}
 
-      {showClearConfirm && (
-        <ConfirmModal
-          title="Reset this show from the beginning?"
-          description="This will remove the current setup, reset the wizard to step 1, and clear the active draw."
-          confirmLabel="Reset from start"
-          danger
-          onCancel={() => setShowClearConfirm(false)}
-          onConfirm={() => void clearShow()}
-        />
-      )}
+export function CreateShowPage() {
+  const [searchParams] = useSearchParams()
+  const isWheel = searchParams.get('screen') === 'lucky-wheel' || searchParams.get('theme') === 'wheel'
+  const title = isWheel ? 'Lucky Wheel' : 'Team Draw'
+  return (
+    <div className="config-page">
+      <header className="config-header">
+        <div className="config-container config-header-inner">
+          <Link className="config-brand" to="/" aria-label="Randomcade — Trang chủ">
+            <span><Dice5 size={22} /></span> Randomcade
+          </Link>
+          <div className="config-save"><Check size={15} /> Tự động lưu</div>
+        </div>
+      </header>
+      <div className="config-container config-page-content">
+        <Link className="config-back" to="/"><ArrowLeft size={16} /> Trang chủ</Link>
+        <div className="config-page-heading">
+          <div><h1>Cấu hình {title}</h1><p>{isWheel
+            ? 'Thêm các lựa chọn của bạn, rồi để vòng quay quyết định.'
+            : 'Thêm đội, chọn số bảng và bắt đầu. Chỉ cần một trang.'}</p></div>
+          <span className="config-mode-label">{isWheel ? 'Vòng quay may mắn' : 'Bốc thăm chia bảng'}</span>
+        </div>
+        {isWheel ? <WheelSetup /> : <TeamDrawSetup />}
+        <footer className="config-footer">Randomcade · Đơn giản, ngẫu nhiên, thật vui.</footer>
+      </div>
     </div>
   )
 }

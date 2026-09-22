@@ -139,7 +139,7 @@
 .arcade-slot-empty svg { flex: none; width: 38px; height: 35px; color: #446ba7; }
 .arcade-group__slot--hidden .arcade-card { visibility: hidden; }
 .arcade-show .arcade-bottom { --edge: #733bea; --surface: radial-gradient(#8255d322 1px,transparent 1px) 0 0 / 5px 5px,#080d2b; display: flex; align-items: center; min-height: 0; gap: 20px; padding: 10px 20px; }
-.arcade-history { display: grid; grid-template-rows: 22px minmax(0,1fr); height: 100%; width: 31%; min-width: 0; flex: none; }
+.arcade-history { display: grid; grid-template-rows: 22px minmax(0,1fr); height: 100%; min-width: 0; flex: 1; }
 .arcade-history>header { color: #48e5fc; font: 17px/1 var(--pixel); }
 .arcade-history>header b { margin-left: 6px; color: #eef7ff; font-weight: 400; }
 .arcade-history__rail { display: flex; align-items: center; gap: 12px; min-height: 0; min-width: 0; overflow-x: auto; scrollbar-width: thin; }
@@ -149,8 +149,6 @@
 .arcade-history__people img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .arcade-history__people span { display: grid; place-items: center; height: 100%; font: 10px var(--pixel); color: #99c7f1; }
 .arcade-history__pending { flex: 0 0 22px; height: 17px; border: 1px solid #228ac4; border-radius: 2px; background: #0c1b41; box-shadow: inset 0 0 4px #4ba7d433; }
-.arcade-city { align-self: end; height: calc(100% + 5px); flex: 1; min-width: 100px; max-width: 550px; object-fit: contain; object-position: bottom; }
-.arcade-footer-motto { flex: none; margin: 0; color: #ab66f5; font: 9px/1.5 var(--pixel); letter-spacing: .14em; }
 .arcade-operator { display: flex; gap: 8px; align-items: center; margin-left: auto; flex: none; }
 .arcade-show .arcade-operator :is(button,a) { --edge: #409ad8; --surface: #07172f; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; min-height: 44px; color: #e2f2ff; text-decoration: none; font: 10px var(--pixel); }
 .arcade-operator svg { width: 20px; height: 20px; }
@@ -179,8 +177,6 @@
   .arcade-push { gap: 6px; }
   .arcade-push>svg { width: 22px; }
   .arcade-push>span { display: none; }
-  .arcade-footer-motto { display: none; }
-  .arcade-history { width: 36%; }
 }
 @media (max-width:1000px) {
   .arcade-shell { min-height: 750px; padding-inline: 10px; gap: 10px; }
@@ -203,7 +199,6 @@
   .arcade-push-housing { grid-column: 2; padding: 0; }
   .arcade-show .arcade-push { height: 44px; }
   .arcade-groups { gap: 9px; }
-  .arcade-city { min-width: 0; }
   .arcade-operator span { display: none; }
 }
 @media (max-width:700px) {
@@ -236,9 +231,7 @@
   .arcade-card--compact .arcade-card__portraits { width: 34px; }
   .arcade-card--compact>strong { font-size: 10px; }
   .arcade-show .arcade-bottom { padding: 12px; gap: 8px; }
-  .arcade-history { flex: 1; width: auto; }
   .arcade-history>header { font-size: 15px; }
-  .arcade-city { display: none; }
   .arcade-operator { gap: 4px; }
   .arcade-show .arcade-operator :is(button,a) { padding: 8px; }
 }
