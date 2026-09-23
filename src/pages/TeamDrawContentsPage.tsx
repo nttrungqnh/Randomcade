@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Copy, MoreHorizontal, Pencil, Play, Plus, RotateCcw, Trash2, Trophy, Users } from 'lucide-react'
+import { Clapperboard, Copy, MoreHorizontal, Pencil, Play, Plus, RotateCcw, Trash2, Trophy, Users, Zap } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ConfirmModal } from '../components/create/ConfirmModal'
 import { useTeamDrawContentStore } from '../stores/teamDrawContentStore'
 import type { TeamDrawContentStatus } from '../types/models'
 import '../team-draw.css'
+import '../team-draw-mode.css'
 
 const statusLabel: Record<TeamDrawContentStatus, string> = { draft: 'Chưa hoàn thiện', ready: 'Sẵn sàng', drawing: 'Đang bốc thăm', completed: 'Đã hoàn thành' }
 
@@ -28,7 +29,7 @@ export function TeamDrawContentsPage() {
       <div className="content-list">
         {contents.map((content) => <article className="draw-content-card" key={content.id}>
           <div className="draw-content-card__icon"><Trophy size={23} /></div>
-          <div className="draw-content-card__main"><h2>{content.name || 'Chưa đặt tên nội dung'}</h2><p><Users size={15} /> {content.teams.length} đội · {content.groupCount} bảng · {content.teamsPerGroup ?? '—'} đội/bảng</p><small>{content.templateId === 'arcade' ? 'Pixel Arcade' : content.templateId}</small></div>
+          <div className="draw-content-card__main"><h2>{content.name || 'Chưa đặt tên nội dung'}</h2><p><Users size={15} /> {content.teams.length} đội · {content.groupCount} bảng · {content.teamsPerGroup ?? '—'} đội/bảng</p><div className="draw-content-card__meta"><small>{content.templateId === 'arcade' ? 'Pixel Arcade' : content.templateId}</small><small>{content.drawMode === 'instant' ? <Zap size={13} /> : <Clapperboard size={13} />}{content.drawMode === 'instant' ? 'Bốc tất cả' : 'Bốc từng đội'}</small></div></div>
           <span className={`draw-status draw-status--${content.status}`}>{statusLabel[content.status]}</span>
           <div className="draw-content-card__actions">
             {content.status === 'completed' ? <><button onClick={() => open(content.id)}><Play size={15} /> Xem kết quả</button><button onClick={() => setResetId(content.id)}><RotateCcw size={15} /> Bốc lại</button></> : <><Link to={`/team-draw/${content.id}/edit`}><Pencil size={15} /> Sửa</Link><button disabled={content.status === 'draft'} onClick={() => open(content.id)}><Play size={15} /> Bốc thăm</button></>}

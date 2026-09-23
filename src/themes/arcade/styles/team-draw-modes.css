@@ -1,0 +1,2 @@
+.arcade-groups--concealed{visibility:hidden}.arcade-show--shuffling .arcade-machine__screen,.arcade-show--dealing .arcade-machine__screen{animation:bulk-draw-pulse .36s steps(2,end) infinite alternate}.arcade-show--dealing .arcade-machine__screen{animation-duration:.22s}@keyframes bulk-draw-pulse{from{filter:brightness(.82);transform:translateY(0)}to{filter:brightness(1.28);transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){.arcade-show--shuffling .arcade-machine__screen,.arcade-show--dealing .arcade-machine__screen{animation:none}}

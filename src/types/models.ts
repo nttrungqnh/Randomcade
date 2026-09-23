@@ -57,6 +57,7 @@ export interface ShowSession {
 }
 
 export type TeamDrawContentStatus = 'draft' | 'ready' | 'drawing' | 'completed'
+export type TeamDrawMode = 'sequential' | 'instant'
 
 export interface TeamDrawSettings {
   screenConfig: string
@@ -70,6 +71,7 @@ export interface TeamDrawContent {
   groupCount: number
   teamsPerGroup?: number
   templateId: ExperienceTheme
+  drawMode: TeamDrawMode
   settings: TeamDrawSettings
   status: TeamDrawContentStatus
   groups: Group[]
@@ -84,5 +86,6 @@ export interface TeamDrawContentInput {
   teams: Team[]
   groupCount: number
   templateId: ExperienceTheme
+  drawMode: TeamDrawMode
   settings: TeamDrawSettings
 }

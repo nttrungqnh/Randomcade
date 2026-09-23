@@ -44,4 +44,14 @@ export class RandomEngine {
     state.drawHistory.push(result)
     return result
   }
+
+  generateFullDraw(state: RandomEngineState): DrawResult[] {
+    const results: DrawResult[] = []
+    while (state.drawHistory.length < state.teams.length) {
+      const result = this.drawNext(state)
+      if (!result) break
+      results.push(result)
+    }
+    return results
+  }
 }

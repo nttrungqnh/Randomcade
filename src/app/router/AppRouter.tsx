@@ -9,6 +9,7 @@ const CreateShowPage = lazy(() => import('../../pages/CreateShowPage').then((mod
 const WheelShowPage = lazy(() => import('../../themes/wheel/WheelShowPage').then((module) => ({ default: module.WheelShowPage })))
 const TeamDrawContentsPage = lazy(() => import('../../pages/TeamDrawContentsPage').then((module) => ({ default: module.TeamDrawContentsPage })))
 const TeamDrawEditorPage = lazy(() => import('../../pages/TeamDrawEditorPage').then((module) => ({ default: module.TeamDrawEditorPage })))
+const TeamDrawResultPage = lazy(() => import('../../pages/TeamDrawResultPage').then((module) => ({ default: module.TeamDrawResultPage })))
 
 const routes = [
   {
@@ -30,7 +31,7 @@ export function AppRouter() {
             <Route path="/team-draw/new" element={<TeamDrawEditorPage />} />
             <Route path="/team-draw/:id/edit" element={<TeamDrawEditorPage />} />
             <Route path="/team-draw/:id/play" element={<ArcadeShowPage />} />
-            <Route path="/team-draw/:id/result" element={<ArcadeShowPage />} />
+            <Route path="/team-draw/:id/result" element={<TeamDrawResultPage />} />
             <Route path="/show/arcade" element={<ArcadeShowPage />} />
             <Route path="/show/wheel" element={<WheelShowPage />} />
             {routes.map((route) => (

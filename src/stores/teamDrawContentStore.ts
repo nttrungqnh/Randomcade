@@ -30,7 +30,8 @@ interface TeamDrawContentState {
   deleteContent: (contentId: string) => Promise<void>
   duplicateContent: (contentId: string) => Promise<string | null>
   startDraw: (contentId: string) => DrawResult | null
-  drawNext: (contentId: string) => DrawResult | null
+  drawAll: (contentId: string) => Promise<DrawResult[]>
+  drawNext: (contentId: string) => Promise<DrawResult | null>
   undoLastDraw: (contentId: string) => DrawResult | null
   resetDraw: (contentId: string) => void
 }
@@ -41,7 +42,18 @@ export const useTeamDrawContentStore = create<TeamDrawContentState>((set, get) =
   contents: [],
   hydrated: false,
   hydrate: async () => {
-    const contents = await localDatabase.teamDrawContents.orderBy('updatedAt').reverse().toArray()
+    const stored = await localDatabase.teamDrawContents.orderBy('updatedAt').reverse().toArray()
+    const contents = await Promise.all(stored.map(async (item) => {
+      const content = { ...item, drawMode: item.drawMode ?? 'sequential' as const }
+      const needsModeMigration = item.drawMode === undefined
+      if (content.status === 'drawing' && content.drawHistory.length === content.teams.length && content.teams.length > 0) {
+        content.status = 'completed'
+        content.completedAt = content.completedAt ?? Date.now()
+        content.updatedAt = Date.now()
+      }
+      if (needsModeMigration || content.status !== item.status) await localDatabase.teamDrawContents.put(content)
+      return content
+    }))
     set({ contents, hydrated: true })
   },
   getContent: (contentId) => get().contents.find((content) => content.id === contentId),
@@ -50,7 +62,7 @@ export const useTeamDrawContentStore = create<TeamDrawContentState>((set, get) =
     const content: TeamDrawContent = {
       id: id(), name: input.name.trim(), teams: structuredClone(input.teams), groupCount: input.groupCount,
       teamsPerGroup: Math.ceil(input.teams.length / Math.max(1, input.groupCount)), templateId: input.templateId,
-      settings: { ...input.settings }, status: statusFor(input), groups: buildGroups(input.teams.length, input.groupCount),
+      drawMode: input.drawMode ?? 'sequential', settings: { ...input.settings }, status: statusFor(input), groups: buildGroups(input.teams.length, input.groupCount),
       drawHistory: [], createdAt: now, updatedAt: now,
     }
     await localDatabase.teamDrawContents.put(content)
@@ -65,7 +77,7 @@ export const useTeamDrawContentStore = create<TeamDrawContentState>((set, get) =
     const next: TeamDrawContent = {
       ...current, name: input.name.trim(), teams: structuredClone(input.teams), groupCount: input.groupCount,
       teamsPerGroup: Math.ceil(input.teams.length / Math.max(1, input.groupCount)), templateId: input.templateId,
-      settings: { ...input.settings }, status, updatedAt: now,
+      drawMode: input.drawMode ?? 'sequential', settings: { ...input.settings }, status, updatedAt: now,
       groups: current.drawHistory.length ? current.groups : buildGroups(input.teams.length, input.groupCount),
     }
     await localDatabase.teamDrawContents.put(next)
@@ -96,7 +108,20 @@ export const useTeamDrawContentStore = create<TeamDrawContentState>((set, get) =
     set((state) => ({ contents: state.contents.map((content) => content.id === contentId ? next : content) }))
     return next.drawHistory.at(-1) ?? null
   },
-  drawNext: (contentId) => {
+  drawAll: async (contentId) => {
+    const current = get().getContent(contentId)
+    if (!current || current.status === 'draft' || current.status === 'completed') return []
+    const next = structuredClone(current)
+    next.status = 'drawing'
+    const results = engine.generateFullDraw(next)
+    if (!results.length) return []
+    if (next.drawHistory.length === next.teams.length) { next.status = 'completed'; next.completedAt = Date.now() }
+    next.updatedAt = Date.now()
+    await localDatabase.teamDrawContents.put(next)
+    set((state) => ({ contents: state.contents.map((content) => content.id === contentId ? next : content) }))
+    return results
+  },
+  drawNext: async (contentId) => {
     const current = get().getContent(contentId)
     if (!current || !['ready', 'drawing'].includes(current.status)) return null
     const next = structuredClone(current)
@@ -105,7 +130,7 @@ export const useTeamDrawContentStore = create<TeamDrawContentState>((set, get) =
     if (!result) return null
     if (next.drawHistory.length === next.teams.length) { next.status = 'completed'; next.completedAt = Date.now() }
     next.updatedAt = Date.now()
-    persistContent(next)
+    await localDatabase.teamDrawContents.put(next)
     set((state) => ({ contents: state.contents.map((content) => content.id === contentId ? next : content) }))
     return result
   },

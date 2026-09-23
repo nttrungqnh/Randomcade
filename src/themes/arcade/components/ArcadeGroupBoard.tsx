@@ -3,12 +3,12 @@ import type { Group, Team } from '../../../types/models'
 import { PixelPeople } from './ArcadePixelArt'
 import { ArcadeTeamCard } from './ArcadeTeamCard'
 
-export function ArcadeGroupBoard({ groups, teams, activeGroupId, hiddenTeamId }: { groups: Group[]; teams: Team[]; activeGroupId?: string; hiddenTeamId?: string }) {
+export function ArcadeGroupBoard({ groups, teams, activeGroupId, hiddenTeamId, concealed = false }: { groups: Group[]; teams: Team[]; activeGroupId?: string; hiddenTeamId?: string; concealed?: boolean }) {
   const findTeam = (id: string) => teams.find((team) => team.id === id)
 
   return (
     <section
-      className={`arcade-groups ${groups.length <= 4 ? 'arcade-groups--compact' : ''}`}
+      className={`arcade-groups ${groups.length <= 4 ? 'arcade-groups--compact' : ''} ${concealed ? 'arcade-groups--concealed' : ''}`}
       style={{ '--arcade-group-count': groups.length } as CSSProperties}
       aria-label="Kết quả chia bảng"
     >

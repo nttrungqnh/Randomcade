@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Maximize, RotateCcw, LogOut, Volume2, VolumeX } from 'lucide-react'
 import { useShowSessionStore } from '../../stores/showSessionStore'
 import { useTeamDrawContentStore } from '../../stores/teamDrawContentStore'
@@ -14,15 +14,18 @@ import alarmSoundUrl from '../../assets/sounds/retro-game-alarm.mp3'
 import lotterySoundUrl from '../../assets/sounds/nhac-xo-so.mp3'
 import { PixelBall } from './components/ArcadePixelArt'
 import './styles/arcade-cabinet.css'
+import './styles/team-draw-modes.css'
 
 export function ArcadeShowPage() {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const location = useLocation()
   const { id: drawId } = useParams()
   const teamDrawStore = useTeamDrawContentStore()
   const content = drawId ? teamDrawStore.contents.find((item) => item.id === drawId) : undefined
   const legacySession = useShowSessionStore((state) => state.session)
   const session = content ? { id: content.id, startedAt: content.createdAt, screenConfig: content.settings.screenConfig || content.name, hostName: content.settings.hostName, teams: content.teams, groups: content.groups, drawHistory: content.drawHistory, status: content.status === 'completed' ? 'completed' as const : 'running' as const, groupMode: 'balanced' as const, selectedTheme: content.templateId } : legacySession
-  const drawNext = () => drawId ? teamDrawStore.drawNext(drawId) : useShowSessionStore.getState().drawNext()
+  const drawNext = async () => drawId ? teamDrawStore.drawNext(drawId) : useShowSessionStore.getState().drawNext()
   const undo = () => drawId ? teamDrawStore.undoLastDraw(drawId) : useShowSessionStore.getState().undoLastDraw()
   const reset = () => { if (drawId) teamDrawStore.resetDraw(drawId); else useShowSessionStore.getState().resetDraw() }
   const startSession = useShowSessionStore((state) => state.startSession)
@@ -30,13 +33,21 @@ export function ArcadeShowPage() {
   const timelineRef = useRef<ReturnType<typeof createArcadeDrawTimeline> | null>(null)
   const alarmRef = useRef<HTMLAudioElement | null>(null)
   const alarmFadeRef = useRef<number | null>(null)
+  const drawLockRef = useRef(false)
+  const bulkRevealTimerRef = useRef<number | null>(null)
   const [visualState, setVisualState] = useState<ArcadeVisualState>('idle')
   const [result, setResult] = useState<DrawResult | null>(null)
   const [conveyorPool, setConveyorPool] = useState<Team[]>([])
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [selectedSound, setSelectedSound] = useState<'retro' | 'lottery'>('retro')
   const [confirmReset, setConfirmReset] = useState(false)
+  const [bulkRevealed, setBulkRevealed] = useState(true)
   useEffect(() => { if (drawId) void teamDrawStore.hydrate() }, [drawId])
+  useEffect(() => {
+    if (drawId && content?.status === 'completed' && visualState === 'idle' && !drawLockRef.current && location.pathname.endsWith('/play')) {
+      navigate(`/team-draw/${drawId}/result`, { replace: true })
+    }
+  }, [content?.status, drawId, location.pathname, navigate, visualState])
   const isAnimating = visualState !== 'idle' && visualState !== 'complete'
   const displayedResult = result ?? session?.drawHistory.at(-1) ?? null
   const selectedTeam = displayedResult ? session?.teams.find((team) => team.id === displayedResult.teamId) : undefined
@@ -44,7 +55,7 @@ export function ArcadeShowPage() {
   const selectedTeamNumber = selectedTeam && session ? session.teams.findIndex((team) => team.id === selectedTeam.id) + 1 : undefined
   const drawn = session?.drawHistory.length ?? 0
   const remainingTeams = useMemo(() => session?.teams.filter((team) => !session.drawHistory.some((draw) => draw.teamId === team.id)) ?? [], [session])
-  const visibleHistory = session ? (isAnimating ? session.drawHistory.slice(0, -1) : session.drawHistory) : []
+  const visibleHistory = !session ? [] : content?.drawMode === 'instant' && !bulkRevealed ? [] : isAnimating ? session.drawHistory.slice(0, -1) : session.drawHistory
   const visibleGroups = useMemo(() => {
     if (!session || !isAnimating || !result) return session?.groups ?? []
     return session.groups.map((group) => ({
@@ -87,14 +98,35 @@ export function ArcadeShowPage() {
     alarmFadeRef.current = window.requestAnimationFrame(fade)
   }, [])
 
-  const handlePush = useCallback(() => {
+  const handlePush = useCallback(async () => {
     const current = session
-    if (!current || timelineRef.current?.isActive() || current.status === 'completed') return
+    if (!current || drawLockRef.current || timelineRef.current?.isActive() || current.status === 'completed') return
+    if (content?.drawMode === 'instant' && drawId) {
+      drawLockRef.current = true
+      let allResults: DrawResult[]
+      try { allResults = await teamDrawStore.drawAll(drawId) } catch { drawLockRef.current = false; return }
+      if (!allResults.length) { drawLockRef.current = false; return }
+      setBulkRevealed(false)
+      setConveyorPool(current.teams)
+      setVisualState('shuffling')
+      startAlarm()
+      bulkRevealTimerRef.current = window.setTimeout(() => {
+        setVisualState('dealing')
+      bulkRevealTimerRef.current = window.setTimeout(() => {
+        setBulkRevealed(true)
+        setConveyorPool([])
+        setVisualState('complete')
+        drawLockRef.current = false
+        navigate(`/team-draw/${drawId}/result`, { replace: true })
+        }, 1450)
+      }, 1450)
+      return
+    }
     startAlarm()
     const poolBeforeDraw = current.teams.filter((team) => !current.drawHistory.some((draw) => draw.teamId === team.id))
     setConveyorPool(poolBeforeDraw)
     setVisualState('starting')
-    const next = drawNext()
+    const next = await drawNext()
     if (!next || !rootRef.current) {
       setVisualState('idle')
       return
@@ -104,9 +136,9 @@ export function ArcadeShowPage() {
     requestAnimationFrame(() => {
       if (!rootRef.current) return
       timelineRef.current?.kill()
-      timelineRef.current = createArcadeDrawTimeline({ root: rootRef.current, groupId: next.groupId, reducedMotion, onState: setVisualState, onFinish: () => { setConveyorPool([]); setVisualState(useShowSessionStore.getState().session?.status === 'completed' ? 'complete' : 'idle') } })
+      timelineRef.current = createArcadeDrawTimeline({ root: rootRef.current, groupId: next.groupId, reducedMotion, onState: setVisualState, onFinish: () => { setConveyorPool([]); const latest = drawId ? useTeamDrawContentStore.getState().getContent(drawId) : useShowSessionStore.getState().session; setVisualState(latest?.status === 'completed' ? 'complete' : 'idle'); if (drawId && latest?.status === 'completed') navigate(`/team-draw/${drawId}/result`, { replace: true }) } })
     })
-  }, [drawNext, session, startAlarm])
+  }, [content?.drawMode, drawId, drawNext, navigate, session, startAlarm, teamDrawStore])
 
   useEffect(() => {
     const audio = alarmRef.current
@@ -118,6 +150,7 @@ export function ArcadeShowPage() {
 
   useEffect(() => () => {
     timelineRef.current?.kill()
+    if (bulkRevealTimerRef.current !== null) window.clearTimeout(bulkRevealTimerRef.current)
     if (alarmFadeRef.current !== null) window.cancelAnimationFrame(alarmFadeRef.current)
     alarmRef.current?.pause()
   }, [])
@@ -154,10 +187,10 @@ export function ArcadeShowPage() {
         <div className="arcade-header-right"><div className="arcade-live pixel-frame"><b><i /> LIVE</b><span>{String(visibleHistory.length).padStart(2, '0')}/{String(session.teams.length).padStart(2, '0')}</span></div></div>
       </header>
       <section className="arcade-main-stage">
-        <ArcadeMachine visualState={session.status === 'completed' && !isAnimating ? 'complete' : visualState} teams={isAnimating && conveyorPool.length > 0 ? conveyorPool : remainingTeams} selectedTeam={selectedTeam} onPush={handlePush} onUndo={handleUndo} soundEnabled={soundEnabled} disabled={isAnimating || session.status === 'completed'} historyDisabled={isAnimating || drawn === 0} />
+        <ArcadeMachine visualState={session.status === 'completed' && !isAnimating ? 'complete' : visualState} teams={isAnimating && conveyorPool.length > 0 ? conveyorPool : remainingTeams} selectedTeam={selectedTeam} onPush={() => { void handlePush() }} onUndo={handleUndo} soundEnabled={soundEnabled} disabled={isAnimating || session.status === 'completed'} historyDisabled={isAnimating || drawn === 0 || content?.drawMode === 'instant'} drawButtonLabel={content?.drawMode === 'instant' ? '⚡ BỐC TẤT CẢ' : 'BỐC THĂM'} progress={`${String(drawn).padStart(2, '0')} / ${String(session.teams.length).padStart(2, '0')}`} />
         <ArcadeResultPanel visualState={visualState} team={selectedTeam} teamNumber={selectedTeamNumber} group={selectedGroup} complete={session.status === 'completed'} />
       </section>
-      <ArcadeGroupBoard groups={visibleGroups} teams={session.teams} activeGroupId={isAnimating ? selectedGroup?.id : undefined} />
+      <ArcadeGroupBoard groups={visibleGroups} teams={session.teams} activeGroupId={isAnimating ? selectedGroup?.id : undefined} concealed={content?.drawMode === 'instant' && !bulkRevealed} />
       <footer className="arcade-bottom pixel-frame">
         <DrawnTeamsStrip history={visibleHistory} teams={session.teams} />
         <nav className="arcade-operator" aria-label="Điều khiển màn chơi">
@@ -169,7 +202,7 @@ export function ArcadeShowPage() {
         </nav>
       </footer>
     </div>
-    {confirmReset && <div className="arcade-modal"><div><p>Bốc thăm lại?</p><span>Kết quả bốc thăm sẽ bị xóa. Danh sách đội và thiết lập bảng vẫn được giữ.</span><footer><button onClick={() => setConfirmReset(false)}>Hủy</button><button onClick={() => { timelineRef.current?.kill(); reset(); setResult(null); setVisualState('idle'); setConfirmReset(false) }}>Làm lại</button></footer></div></div>}
+    {confirmReset && <div className="arcade-modal"><div><p>Bốc thăm lại?</p><span>Bốc lại sẽ xóa toàn bộ kết quả hiện tại. Danh sách đội và thiết lập vẫn được giữ.</span><footer><button onClick={() => setConfirmReset(false)}>Hủy</button><button onClick={() => { timelineRef.current?.kill(); if (bulkRevealTimerRef.current !== null) window.clearTimeout(bulkRevealTimerRef.current); drawLockRef.current = false; reset(); setResult(null); setBulkRevealed(true); setVisualState('idle'); setConfirmReset(false) }}>Bốc lại</button></footer></div></div>}
     {debug && <aside className="arcade-debug">{visualState} · {result?.teamId ?? '—'} · {result?.groupId ?? '—'}</aside>}
   </main>
 }
